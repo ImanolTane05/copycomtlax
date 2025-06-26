@@ -1,16 +1,16 @@
- const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 
-module.exports = (req, res, next) => {
-  const token = req.headers['authorization'];
+exports.verifyToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  if (!authHeader) return res.status(401).json({ mensaje: 'Token requerido' });
+
+  const token = authHeader.split(' ')[1]; // Bearer token
+
   if (!token) return res.status(401).json({ mensaje: 'Token no proporcionado' });
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (decoded.rol !== 'admin') return res.status(403).json({ mensaje: 'Solo admins pueden acceder' });
-    req.user = decoded;
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) return res.status(401).json({ mensaje: 'Token inválido' });
+    req.user = decoded; // _id y rol
     next();
-  } catch (err) {
-    res.status(401).json({ mensaje: 'Token inválido' });
-  }
+  });
 };
-
