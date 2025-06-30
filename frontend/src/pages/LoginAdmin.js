@@ -1,96 +1,118 @@
 import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import styles from  './Auth.module.css'; 
 
 const LoginAdmin = () => {
-  const [correo, setCorreo] = useState('');
-  const [contrasena, setContrasena] = useState('');
-  const [error, setError] = useState('');
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ mode: 'onBlur', reValidateMode: 'onBlur' });
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(prev => !prev);
+  };
+
+  const onSubmit = async (data) => {
     try {
       const res = await axios.post('http://localhost:5000/api/auth/login', {
-        correo,
-        contrasena,
+        correo: data.email,
+        contrasena: data.password,
       });
 
       localStorage.setItem('token', res.data.token);
-      setError('');
-      navigate('/admin/dashboard'); // Redirige a dashboard tras login exitoso
-    } catch (err) {
-      setError('');
-      if (err.response) {
-        setError(err.response.data.mensaje);
+      alert('Inicio de sesión exitoso');
+      navigate('/admin/dashboard');
+    } catch (error) {
+      if (error.response) {
+        alert(error.response.data.mensaje || 'Error al iniciar sesión');
       } else {
-        setError('Error al conectar con el servidor');
+        alert('Error inesperado. Intenta más tarde');
       }
     }
   };
 
   return (
-    <div style={styles.container}>
-      <h2>Login Administrador</h2>
-      <form onSubmit={handleLogin} style={styles.form}>
-        <input
-          type="email"
-          placeholder="Correo"
-          value={correo}
-          onChange={(e) => setCorreo(e.target.value)}
-          required
-          style={styles.input}
-        />
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={contrasena}
-          onChange={(e) => setContrasena(e.target.value)}
-          required
-          style={styles.input}
-        />
-        <button type="submit" style={styles.button}>Iniciar Sesión</button>
-      </form>
+    <section className={styles.authSection}>
+      <div className={styles.imageContainer}>
+        <img src="/Logo.png" alt="Logo" className={styles.image} />
+      </div>
 
-      {error && <p style={styles.error}>{error}</p>}
-    </div>
+      <div className={styles.formContainer}>
+        <form className={styles.authForm} onSubmit={handleSubmit(onSubmit)}>
+          <h2 className={styles.authTitle}>Login Administrador</h2>
+
+          <div className={styles.inputGroup}>
+            <label htmlFor="email" className={styles.label}>Correo</label>
+            <input
+              id="email"
+              type="email"
+              className={styles.input}
+              placeholder="Ingrese su correo"
+              {...register('email', {
+                required: 'El correo es obligatorio',
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: 'Correo inválido',
+                },
+              })}
+            />
+            {errors.email && <div className={styles.error}>{errors.email.message}</div>}
+          </div>
+
+          <div className={styles.inputGroup} style={{ position: 'relative' }}>
+            <label htmlFor="password" className={styles.label}>Contraseña</label>
+            <input
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              className={styles.input}
+              placeholder="Ingrese su contraseña"
+              {...register('password', {
+                required: 'La contraseña es obligatoria',
+                minLength: {
+                  value: 6,
+                  message: 'Mínimo 6 caracteres',
+                },
+              })}
+            />
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              style={{
+                position: "absolute",
+                right: "10px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+              }}
+            >
+              {showPassword ? '🙈' : '👁️'}
+            </button>
+            {errors.password && <div className={styles.error}>{errors.password.message}</div>}
+          </div>
+
+          <button type="submit" className={styles.submitButton}>
+            Iniciar sesión
+          </button>
+
+          <p className={styles.toggleText}>
+            ¿No tienes cuenta?{' '}
+            <Link to="/register" className={styles.toggleLink}>
+              Regístrate
+            </Link>
+          </p>
+        </form>
+      </div>
+    </section>
   );
-};
-
-const styles = {
-  container: {
-    width: '100%',
-    maxWidth: 400,
-    margin: '50px auto',
-    padding: 20,
-    border: '1px solid #ccc',
-    borderRadius: 8,
-    textAlign: 'center',
-    fontFamily: 'Arial',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 10,
-  },
-  input: {
-    padding: 10,
-    fontSize: 16,
-  },
-  button: {
-    padding: 10,
-    backgroundColor: '#2e7d32',
-    color: '#fff',
-    border: 'none',
-    borderRadius: 4,
-    fontWeight: 'bold',
-    cursor: 'pointer',
-  },
-  error: {
-    color: 'red',
-    marginTop: 10,
-  },
 };
 
 export default LoginAdmin;
