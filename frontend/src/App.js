@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 
 import Visitor from './pages/Visitor';
 import LoginAdmin from './pages/LoginAdmin';
+import Register from './pages/Register';
 import DashboardAdmin from './pages/DashboardAdmin';
 import Encuestas from './pages/Encuestas';
 import AdminEncuestas from './pages/AdminEncuestas';
@@ -30,6 +31,7 @@ const AppWrapper = () => {
 
         {/* Rutas admin */}
         <Route path="/admin" element={<LoginAdmin />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/admin/dashboard" element={
           <ProtectedRoute>
             <DashboardAdmin />
