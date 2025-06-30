@@ -102,13 +102,6 @@ const LoginAdmin = () => {
           <button type="submit" className={styles.submitButton}>
             Iniciar sesión
           </button>
-
-          <p className={styles.toggleText}>
-            ¿No tienes cuenta?{' '}
-            <Link to="/register" className={styles.toggleLink}>
-              Regístrate
-            </Link>
-          </p>
         </form>
       </div>
     </section>

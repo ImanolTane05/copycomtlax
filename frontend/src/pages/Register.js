@@ -110,11 +110,6 @@ const Register = () => {
         <button type="submit" className={styles.submitButton}>
           Registrarse
         </button>
-
-        <p className={styles.toggleText}>
-          ¿Ya tienes cuenta?{' '}
-          <Link to="/login" className={styles.toggleLink}>Inicia sesión</Link>
-        </p>
       </form>
     </div>
   );
