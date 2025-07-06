@@ -1,15 +1,20 @@
 const mongoose = require('mongoose');
 
-const RespuestaSchema = new mongoose.Schema({
-  usuarioId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  respuesta: { type: mongoose.Schema.Types.Mixed }
+// Subdocumento de pregunta
+const PreguntaSchema = new mongoose.Schema({
+  texto: { type: String, required: true },
+  tipo: { 
+    type: String, 
+    enum: ['Abierta', 'Cerrada', 'Opción múltiple'], 
+    required: true 
+  },
+  opciones: [String] // Solo se usa si tipo es Cerrada u Opción múltiple
 });
 
+// Esquema de encuesta principal
 const EncuestaSchema = new mongoose.Schema({
-  pregunta: { type: String, required: true },
-  tipo: { type: String, enum: ['opcion', 'abierta'], required: true },
-  opciones: [String],
-  respuestas: [RespuestaSchema],
+  titulo: { type: String, required: true },
+  preguntas: [PreguntaSchema],
   creadaPor: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   fechaCreacion: { type: Date, default: Date.now }
 });

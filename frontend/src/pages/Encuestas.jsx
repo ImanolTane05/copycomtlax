@@ -12,37 +12,44 @@ const Encuestas = () => {
       .catch(err => console.error('Error al cargar encuestas:', err));
   }, []);
 
-  const handleChange = (id, value) => {
-    setRespuestas(prev => ({ ...prev, [id]: value }));
+  const handleChange = (encuestaId, preguntaId, value) => {
+    setRespuestas(prev => ({
+      ...prev,
+      [encuestaId]: {
+        ...prev[encuestaId],
+        [preguntaId]: value
+      }
+    }));
   };
 
-  const handleSubmit = async (e, encuestaId) => {
+  const handleSubmit = async (e, encuestaId, preguntaId) => {
     e.preventDefault();
 
-    if (!respuestas[encuestaId] || respuestas[encuestaId].trim() === '') {
-      setMensaje('Por favor, responde la encuesta antes de enviar.');
+    if (!respuestas[encuestaId]?.[preguntaId] || respuestas[encuestaId][preguntaId].trim() === '') {
+      setMensaje('Por favor, responde la pregunta antes de enviar.');
       return;
     }
 
     try {
-      const token = localStorage.getItem('token');
-
-      const config = token
-        ? { headers: { Authorization: `Bearer ${token}` } }
-        : {};
-
       await axios.post(`http://localhost:5000/api/encuestas/${encuestaId}/responder`, {
-        respuesta: respuestas[encuestaId]
-      }, config);
+        preguntaId,
+        respuesta: respuestas[encuestaId][preguntaId]
+      });
 
       setMensaje('Gracias por tu respuesta.');
-      setRespuestas(prev => ({ ...prev, [encuestaId]: '' })); // Opcional: limpiar la respuesta
+
+      setRespuestas(prev => ({
+        ...prev,
+        [encuestaId]: {
+          ...prev[encuestaId],
+          [preguntaId]: ''
+        }
+      }));
     } catch (err) {
       console.error('Error al enviar respuesta:', err);
       setMensaje('Error al enviar respuesta.');
     }
 
-    // Opcional: limpiar mensaje después de 5 segundos
     setTimeout(() => setMensaje(''), 5000);
   };
 
@@ -50,44 +57,53 @@ const Encuestas = () => {
     <div className="max-w-2xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Encuestas</h1>
       {mensaje && <p className="mb-4 text-green-600">{mensaje}</p>}
+
       {encuestas.map(encuesta => (
-        <form
-          key={encuesta._id}
-          onSubmit={(e) => handleSubmit(e, encuesta._id)}
-          className="mb-6 border p-4 rounded shadow"
-        >
-          <h2 className="text-lg font-semibold mb-2">{encuesta.pregunta}</h2>
-          {encuesta.tipo === 'opcion' ? (
-            encuesta.opciones.map((opcion, idx) => (
-              <label key={idx} className="block">
-                <input
-                  type="radio"
-                  name={encuesta._id}
-                  value={opcion}
-                  checked={respuestas[encuesta._id] === opcion}
-                  onChange={(e) => handleChange(encuesta._id, e.target.value)}
-                  className="mr-2"
+        <div key={encuesta._id} className="mb-6 border p-4 rounded shadow">
+          <h2 className="text-lg font-semibold mb-4">{encuesta.titulo}</h2>
+
+          {encuesta.preguntas.map(pregunta => (
+            <form
+              key={pregunta._id}
+              onSubmit={(e) => handleSubmit(e, encuesta._id, pregunta._id)}
+              className="mb-4"
+            >
+              <h3 className="mb-2">{pregunta.texto}</h3>
+
+              {pregunta.tipo === 'opcion' ? (
+                pregunta.opciones.map((opcion, idx) => (
+                  <label key={idx} className="block">
+                    <input
+                      type="radio"
+                      name={pregunta._id}
+                      value={opcion}
+                      checked={respuestas[encuesta._id]?.[pregunta._id] === opcion}
+                      onChange={(e) => handleChange(encuesta._id, pregunta._id, e.target.value)}
+                      className="mr-2"
+                      required
+                    />
+                    {opcion}
+                  </label>
+                ))
+              ) : (
+                <textarea
+                  placeholder="Escribe tu respuesta..."
+                  value={respuestas[encuesta._id]?.[pregunta._id] || ''}
+                  onChange={(e) => handleChange(encuesta._id, pregunta._id, e.target.value)}
+                  className="w-full border rounded p-2"
                   required
                 />
-                {opcion}
-              </label>
-            ))
-          ) : (
-            <textarea
-              placeholder="Escribe tu respuesta..."
-              value={respuestas[encuesta._id] || ''}
-              onChange={(e) => handleChange(encuesta._id, e.target.value)}
-              className="w-full border rounded p-2"
-              required
-            />
-          )}
-          <button
-            type="submit"
-            className="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Enviar respuesta
-          </button>
-        </form>
+              )}
+
+              <button
+                type="submit"
+                className="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Enviar respuesta
+              </button>
+            </form>
+          ))}
+        </div>
       ))}
     </div>
   );
