@@ -8,19 +8,17 @@ import DashboardAdmin from './pages/DashboardAdmin';
 import Encuestas from './pages/Encuestas';
 import AdminEncuestas from './pages/AdminEncuestas';
 import Navbar from './components/Navbar';
+import Contact from './pages/Contact'; 
 
-// Componente para proteger rutas admin
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
   return token ? children : <Navigate to="/admin" replace />;
 };
 
-// Componente para controlar la visibilidad del Navbar según ruta
 const AppWrapper = () => {
   const location = useLocation();
 
-  // No mostrar navbar en login admin
-  const noNavbarRoutes = ['/admin'];
+  const noNavbarRoutes = ['/admin']; 
 
   return (
     <>
@@ -29,7 +27,9 @@ const AppWrapper = () => {
         <Route path="/" element={<Visitor />} />
         <Route path="/encuestas" element={<Encuestas />} />
 
-        {/* Rutas admin */}
+        {}
+        <Route path="/contact" element={<Contact />} />
+
         <Route path="/admin" element={<LoginAdmin />} />
         <Route path="/register" element={<Register />} />
         <Route path="/admin/dashboard" element={

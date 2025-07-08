@@ -14,6 +14,7 @@ const Navbar = () => {
   return (
     <nav className="bg-gray-800 p-4 text-white flex justify-between items-center">
       <div className="space-x-4">
+        {}
         <button
           onClick={() => navigate('/encuestas')}
           className="hover:bg-gray-700 px-3 py-1 rounded"
@@ -21,6 +22,15 @@ const Navbar = () => {
           Encuestas
         </button>
 
+       
+        <button
+          onClick={() => navigate('/contact')} 
+          className="hover:bg-gray-700 px-3 py-1 rounded"
+        >
+          Contacto
+        </button>
+
+        {}
         {isAdmin && (
           <>
             <button
@@ -39,6 +49,7 @@ const Navbar = () => {
         )}
       </div>
 
+      {}
       {isAdmin && (
         <button
           onClick={handleLogout}

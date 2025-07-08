@@ -21,6 +21,9 @@ app.use('/api/auth', authRoutes);
 const encuestaRoutes = require('./routes/encuestaRoutes');
 app.use('/api/encuestas', encuestaRoutes);
 
+const contactRoutes = require('./routes/contactRoutes');
+app.use('/api/contact', contactRoutes);
+
 // Conexión a MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✅ Conectado a MongoDB'))
