@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const verifyToken = require('../middleware/verifyToken');
+const { verifyToken, verifyAdmin } = require('../middleware/authMiddleware');
 const {
   crearEncuesta,
   obtenerEncuestas,
@@ -8,16 +8,16 @@ const {
   responderEncuesta,
 } = require('../controllers/encuestaController');
 
-// Crear encuesta (solo admin autenticado)
-router.post('/', verifyToken, crearEncuesta);
+// Crear encuesta (solo admin)
+router.post('/', verifyToken, verifyAdmin, crearEncuesta);
 
 // Obtener todas las encuestas (público)
 router.get('/', obtenerEncuestas);
 
-// Obtener resultados (solo admin autenticado)
-router.get('/resultados/:id', verifyToken, obtenerResultados);
+// Obtener resultados (solo admin)
+router.get('/resultados/:id', verifyToken, verifyAdmin, obtenerResultados);
 
-// Responder encuesta (público, sin token)
+// Responder encuesta (público)
 router.post('/:id/responder', responderEncuesta);
 
 module.exports = router;

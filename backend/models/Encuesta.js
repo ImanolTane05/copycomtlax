@@ -1,17 +1,18 @@
 const mongoose = require('mongoose');
 
-// Subdocumento de pregunta
 const PreguntaSchema = new mongoose.Schema({
   texto: { type: String, required: true },
-  tipo: { 
-    type: String, 
-    enum: ['Abierta', 'Cerrada', 'Opción múltiple'], 
-    required: true 
+  tipo: {
+    type: String,
+    enum: ['Abierta', 'Cerrada', 'Opción múltiple'],
+    required: true
   },
-  opciones: [String] // Solo se usa si tipo es Cerrada u Opción múltiple
+  opciones: {
+    type: [String],
+    default: [] // solo se usa para preguntas cerradas o múltiples
+  }
 });
 
-// Esquema de encuesta principal
 const EncuestaSchema = new mongoose.Schema({
   titulo: { type: String, required: true },
   preguntas: [PreguntaSchema],

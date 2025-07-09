@@ -20,16 +20,19 @@ const AdminEncuestas = () => {
   const token = localStorage.getItem('token');
 
   useEffect(() => {
+    if (!token) {
+      setError('No autenticado. Inicie sesión como administrador.');
+      return;
+    }
+
     axios.get('http://localhost:5000/api/encuestas')
       .then(res => setEncuestas(res.data))
       .catch(() => setError('Error al cargar encuestas'));
-  }, []);
+  }, [token]);
 
   const cargarResultados = async (id) => {
-    if (!token) {
-      setError('No autenticado para ver resultados');
-      return;
-    }
+    if (resultados[id]) return; // Evita recarga
+
     try {
       const res = await axios.get(`http://localhost:5000/api/encuestas/resultados/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -44,14 +47,9 @@ const AdminEncuestas = () => {
 
   const contarOpciones = (respuestas, opciones) => {
     const conteo = {};
-    opciones.forEach(op => {
-      conteo[op] = 0;
-    });
+    opciones.forEach(op => { conteo[op] = 0; });
     respuestas.forEach(r => {
-      const val = r.respuesta;
-      if (val in conteo) {
-        conteo[val]++;
-      }
+      if (conteo[r.respuesta] !== undefined) conteo[r.respuesta]++;
     });
     return conteo;
   };
@@ -60,9 +58,7 @@ const AdminEncuestas = () => {
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Resultados de Encuestas</h1>
 
-      {error && (
-        <div className="mb-4 p-2 bg-red-200 text-red-700 rounded">{error}</div>
-      )}
+      {error && <div className="mb-4 p-2 bg-red-200 text-red-700 rounded">{error}</div>}
 
       {encuestas.map(encuesta => (
         <div key={encuesta._id} className="mb-8 border p-4 rounded shadow">
@@ -74,12 +70,11 @@ const AdminEncuestas = () => {
             Ver resultados
           </button>
 
-          {resultados[encuesta._id] && resultados[encuesta._id].map((pregunta, i) => (
+          {resultados[encuesta._id]?.map((pregunta, i) => (
             <div key={i} className="mb-6">
               <h3 className="font-semibold">{pregunta.texto}</h3>
-
               {['Cerrada', 'Opción múltiple'].includes(pregunta.tipo) ? (
-                pregunta.respuestas && pregunta.respuestas.length > 0 ? (
+                pregunta.respuestas.length > 0 ? (
                   <Bar
                     data={{
                       labels: Object.keys(contarOpciones(pregunta.respuestas, pregunta.opciones)),
@@ -92,18 +87,14 @@ const AdminEncuestas = () => {
                     options={{ responsive: true }}
                   />
                 ) : (
-                  <p className="text-sm text-gray-500 italic">Aún no hay respuestas.</p>
+                  <p className="text-sm italic text-gray-500">Aún no hay respuestas.</p>
                 )
               ) : (
-                pregunta.respuestas && pregunta.respuestas.length > 0 ? (
-                  <ul className="mt-2 list-disc list-inside">
-                    {pregunta.respuestas.map((r, idx) => (
-                      <li key={idx} className="text-gray-700">{r.respuesta}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-sm text-gray-500 italic">Aún no hay respuestas.</p>
-                )
+                <ul className="mt-2 list-disc list-inside">
+                  {pregunta.respuestas.map((r, idx) => (
+                    <li key={idx}>{r.respuesta}</li>
+                  ))}
+                </ul>
               )}
             </div>
           ))}

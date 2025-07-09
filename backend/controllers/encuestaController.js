@@ -1,14 +1,39 @@
 const Encuesta = require('../models/Encuesta');
 const Respuesta = require('../models/Respuesta');
 
-// Crear nueva encuesta
+// Crear nueva encuesta (solo admin)
 exports.crearEncuesta = async (req, res) => {
   try {
+    const { titulo, preguntas } = req.body;
+
+    if (!titulo || !Array.isArray(preguntas) || preguntas.length === 0) {
+      return res.status(400).json({ mensaje: 'Datos de encuesta incompletos' });
+    }
+
+    // Validación de preguntas
+    for (const pregunta of preguntas) {
+      if (!pregunta.texto || !pregunta.tipo) {
+        return res.status(400).json({ mensaje: 'Cada pregunta debe tener texto y tipo' });
+      }
+
+      const tiposPermitidos = ['Abierta', 'Cerrada', 'Opción múltiple'];
+      if (!tiposPermitidos.includes(pregunta.tipo)) {
+        return res.status(400).json({ mensaje: 'Tipo de pregunta inválido: ' + pregunta.tipo });
+      }
+
+      if (['Cerrada', 'Opción múltiple'].includes(pregunta.tipo)) {
+        if (!Array.isArray(pregunta.opciones) || pregunta.opciones.some(op => !op.trim())) {
+          return res.status(400).json({ mensaje: 'Opciones inválidas en pregunta cerrada o múltiple' });
+        }
+      }
+    }
+
     const encuesta = new Encuesta({
-      titulo: req.body.titulo,
-      preguntas: req.body.preguntas,
+      titulo,
+      preguntas,
       creadaPor: req.user?.id || null
     });
+
     await encuesta.save();
     res.status(201).json(encuesta);
   } catch (err) {
@@ -17,7 +42,7 @@ exports.crearEncuesta = async (req, res) => {
   }
 };
 
-// Obtener todas las encuestas
+// Obtener todas las encuestas (público)
 exports.obtenerEncuestas = async (req, res) => {
   try {
     const encuestas = await Encuesta.find().sort({ fechaCreacion: -1 });
@@ -28,7 +53,7 @@ exports.obtenerEncuestas = async (req, res) => {
   }
 };
 
-// Responder encuesta (guarda en colección separada)
+// Responder encuesta (público)
 exports.responderEncuesta = async (req, res) => {
   const { id: encuestaId } = req.params;
   const { preguntaId, respuesta } = req.body;
@@ -37,8 +62,19 @@ exports.responderEncuesta = async (req, res) => {
     const encuesta = await Encuesta.findById(encuestaId);
     if (!encuesta) return res.status(404).json({ mensaje: 'Encuesta no encontrada' });
 
-    const preguntaExiste = encuesta.preguntas.some(p => p._id.toString() === preguntaId);
-    if (!preguntaExiste) return res.status(404).json({ mensaje: 'Pregunta no encontrada en encuesta' });
+    const pregunta = encuesta.preguntas.find(p => p._id.toString() === preguntaId);
+    if (!pregunta) return res.status(404).json({ mensaje: 'Pregunta no encontrada en encuesta' });
+
+    // Validar formato según tipo
+    if (pregunta.tipo === 'Abierta') {
+      if (!respuesta || typeof respuesta !== 'string') {
+        return res.status(400).json({ mensaje: 'Respuesta inválida para pregunta abierta' });
+      }
+    } else {
+      if (!pregunta.opciones.includes(respuesta)) {
+        return res.status(400).json({ mensaje: 'Respuesta no coincide con las opciones disponibles' });
+      }
+    }
 
     const nuevaRespuesta = new Respuesta({
       encuestaId,
@@ -48,7 +84,6 @@ exports.responderEncuesta = async (req, res) => {
     });
 
     await nuevaRespuesta.save();
-
     res.status(201).json({ mensaje: 'Respuesta guardada correctamente' });
   } catch (error) {
     console.error('❌ Error al responder encuesta:', error);
@@ -56,17 +91,15 @@ exports.responderEncuesta = async (req, res) => {
   }
 };
 
-// Obtener resultados (desde la colección Respuesta)
+// Obtener resultados (solo admin)
 exports.obtenerResultados = async (req, res) => {
   try {
     const encuestaId = req.params.id;
     const encuesta = await Encuesta.findById(encuestaId);
     if (!encuesta) return res.status(404).json({ mensaje: 'Encuesta no encontrada' });
 
-    // Obtener todas las respuestas relacionadas
     const respuestas = await Respuesta.find({ encuestaId });
 
-    // Agrupar por pregunta
     const resultados = encuesta.preguntas.map(pregunta => {
       const respuestasDePregunta = respuestas.filter(r => r.preguntaId.toString() === pregunta._id.toString());
       return {

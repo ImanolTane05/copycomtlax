@@ -25,7 +25,8 @@ const Encuestas = () => {
   const handleSubmit = async (e, encuestaId, preguntaId) => {
     e.preventDefault();
 
-    if (!respuestas[encuestaId]?.[preguntaId] || respuestas[encuestaId][preguntaId].trim() === '') {
+    const respuesta = respuestas[encuestaId]?.[preguntaId];
+    if (!respuesta || respuesta.trim() === '') {
       setMensaje('Por favor, responde la pregunta antes de enviar.');
       return;
     }
@@ -33,7 +34,7 @@ const Encuestas = () => {
     try {
       await axios.post(`http://localhost:5000/api/encuestas/${encuestaId}/responder`, {
         preguntaId,
-        respuesta: respuestas[encuestaId][preguntaId]
+        respuesta
       });
 
       setMensaje('Gracias por tu respuesta.');
@@ -46,7 +47,6 @@ const Encuestas = () => {
         }
       }));
     } catch (err) {
-      console.error('Error al enviar respuesta:', err);
       setMensaje('Error al enviar respuesta.');
     }
 
@@ -70,7 +70,7 @@ const Encuestas = () => {
             >
               <h3 className="mb-2">{pregunta.texto}</h3>
 
-              {pregunta.tipo === 'opcion' ? (
+              {['Cerrada', 'Opción múltiple'].includes(pregunta.tipo) ? (
                 pregunta.opciones.map((opcion, idx) => (
                   <label key={idx} className="block">
                     <input
