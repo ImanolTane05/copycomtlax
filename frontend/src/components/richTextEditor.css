@@ -1,0 +1,45 @@
+.contentEditable {
+    height: 300px;
+    width: 100%;
+    padding: 0 8px;
+    border: 1px solid black;
+    padding:12px;
+    border-radius: 0px 0px 10px 10px;
+}
+
+.placeholder {
+    position:absolute;
+    top:45px;
+    left:12px;
+}
+
+.ltr {
+    text-align:left;
+}
+
+.rtl {
+    text-align:right;
+}
+ 
+.editor-placeholder {
+    color:#999;
+    overflow:hidden;
+    position:absolute;
+    top:15px;
+    left:15px;
+    user-select:none;
+    pointer-events:none;
+}
+
+.editor-paragraph {
+    margin: 0 0 15px 0;
+    position: relative;
+}
+
+/* .rich-text-bold {
+    color: #eeee00
+} */
+
+.rich-text-h1 {
+    font-size:32px;
+}

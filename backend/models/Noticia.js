@@ -20,3 +20,5 @@ const NoticiaSchema=new mongoose.Schema({
     publishedDate:{type:Date,default:Date.now},
     editedDate:{type:Date}
 })
+
+module.exports=mongoose.model('Noticia',NoticiaSchema);

@@ -4,9 +4,12 @@ const Noticia=require('../models/Noticia');
 exports.crearNoticia=async(req,res) => {
     try {
         const noticia=new Noticia({
-            /* 
-                TODO: Guardar contenido e imágenes tanto header como en contenido
-            */
+            title:req.body.title,
+            authors:req.body.authors,
+            lead:req.body.lead,
+            headerPic:req.body.headerPic,
+            body:req.body.body,
+            publishedDate:req.body.publishedDate
         });
         await noticia.save();
         res.status(201).json(noticia);
