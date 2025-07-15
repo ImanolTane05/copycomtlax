@@ -39,6 +39,14 @@ const Navbar = () => {
             >
               Resultados Encuestas
             </button>
+
+            <button
+              onClick={() => navigate('/admin/crear-encuesta')}
+              className="hover:bg-gray-700 px-3 py-1 rounded"
+            >
+              Crear Encuesta
+            </button>
+
             <button
               onClick={() => navigate('/admin/dashboard')}
               className="hover:bg-gray-700 px-3 py-1 rounded"
