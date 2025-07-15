@@ -13,6 +13,10 @@
     left:12px;
 }
 
+.toolbar-wrapper {
+    display:flex;
+}
+
 .ltr {
     text-align:left;
 }
@@ -36,10 +40,22 @@
     position: relative;
 }
 
-/* .rich-text-bold {
-    color: #eeee00
-} */
-
 .rich-text-h1 {
     font-size:32px;
+}
+.rich-text-h2 {
+    font-size:28px;
+}
+.rich-text-h3 {
+    font-size:24px;
+}
+
+ol li {
+    list-style-type:decimal;
+    margin-left:16px;
+}
+
+ul li {
+    list-style-type: disc;
+    margin-left:16px;
 }

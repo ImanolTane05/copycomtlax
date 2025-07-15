@@ -1,16 +1,19 @@
 import './richTextEditor.css';
 
-import {$createTextNode, $getRoot,$getSelection} from 'lexical';
+import {$getSelection, $isRangeSelection} from 'lexical';
 import { useEffect,useState } from 'react';
 
-import {AutoFocusPlugin} from '@lexical/react/LexicalAutoFocusPlugin';
+import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
+import {$setBlocksType} from '@lexical/selection';
+
 import {LexicalComposer} from '@lexical/react/LexicalComposer';
-import {RichTextPlugin} from '@lexical/react/LexicalRichTextPlugin';
 import {ContentEditable} from '@lexical/react/LexicalContentEditable';
 import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin';
 import {LexicalErrorBoundary} from '@lexical/react/LexicalErrorBoundary';
-import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
-import {$createHeadingNode, HeadingNode} from '@lexical/rich-text';
+import {HeadingNode,$createHeadingNode} from '@lexical/rich-text';
+import {RichTextPlugin} from '@lexical/react/LexicalRichTextPlugin';
+import {ListPlugin} from '@lexical/react/LexicalListPlugin';
+import {ListNode,ListItemNode,INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND} from '@lexical/list';
 
 // Estilo de editor
 // El contenido se ajusta en un .CSS
@@ -20,7 +23,9 @@ import {$createHeadingNode, HeadingNode} from '@lexical/rich-text';
 // Se utiliza dentro de initialConfig
 const theme={
     heading:{
-        h1:'rich-text-h1'
+        h1:'rich-text-h1',
+        h2:'rich-text-h2',
+        h3:'rich-text-h3'
     },
     ltr:'ltr',
     rtl:'rtl',
@@ -29,13 +34,6 @@ const theme={
     text:{
         bold:"rich-text-bold"
     }
-}
-
-// Recibe y hace log de errores durante una actualización de Lexical
-// o tira throw como haga falta. Si no se hace throw, Lexical
-// intentará recuperar sin perder datos de usuario.
-function onError(error) {
-    console.error(error);
 }
 
 // Puedes notificar cambios al editor con el
@@ -54,21 +52,69 @@ function EditorOnChange({ onChange }) {
     return null;
 }
 
-function RichHeadingPlugin() {
+function HeadingToolbarPlugin() {
     const [editor]=useLexicalComposerContext();
-    const buttonOnClick=(e)=>{
-        e.preventDefault();
+    const headingTags=['h1','h2','h3'];
+    const buttonOnClick=(tag)=>{
         editor.update(()=> {
-            const root=$getRoot();
-            root.append($createHeadingNode('h1').append($createTextNode('Título')));
+            const selection=$getSelection();
+            if ($isRangeSelection(selection)) {
+                $setBlocksType(selection,()=>$createHeadingNode(tag));
+            }
         });
     };
-    return <button 
-        onClick={buttonOnClick}
-        className='border-x-[1px] border-t-[1px] rounded-t-md border-black transition-all hover:bg-slate-300 p-1'
-        >
-            Añadir título
-    </button>;
+    return (
+        <>{headingTags.map((tag)=>(
+            <button 
+                onClick={(e)=>{
+                    e.preventDefault();
+                    buttonOnClick(tag);
+                }}
+                key={tag}
+                className='border-[1px] border-black transition-all hover:bg-slate-300 py-1 px-3'
+            >
+                {tag.toUpperCase()}
+            </button>
+    ))}</>
+    );
+}
+
+function ListToolbarPlugin() {
+    const [editor]=useLexicalComposerContext();
+    const listTags=['ol','ul'];
+    const buttonOnClick=(tag)=>{
+        if (tag=='ol') {
+            editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND,undefined);
+            return;
+        }
+        editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND,undefined);
+    };
+    return <>{listTags.map((tag)=>(
+        <button 
+            onClick={(e)=>{
+                e.preventDefault();
+                buttonOnClick(tag);
+            }}
+            key={tag}
+            className='border-[1px] border-black transition-all hover:bg-slate-300 py-1 px-3'
+        >{tag.toUpperCase()}</button>
+    ))}</>
+}
+
+
+
+function ToolbarPlugin() {
+    return <div className='toolbar-wrapper'>
+        <HeadingToolbarPlugin/>
+        <ListToolbarPlugin/>
+    </div>
+}
+
+// Recibe y hace log de errores durante una actualización de Lexical
+// o tira throw como haga falta. Si no se hace throw, Lexical
+// intentará recuperar sin perder datos de usuario.
+function onError(error) {
+    console.error(error);
 }
 
 export default function RichTextEditor() {
@@ -77,7 +123,9 @@ export default function RichTextEditor() {
         theme:theme,
         onError,
         nodes:[
-            HeadingNode
+            HeadingNode,
+            ListNode,
+            ListItemNode
         ]
     };
 
@@ -97,7 +145,8 @@ export default function RichTextEditor() {
 
     return (
         <LexicalComposer initialConfig={initialConfig}>
-            <RichHeadingPlugin/>
+            <ToolbarPlugin/>
+            <ListPlugin/>
             <RichTextPlugin
                 contentEditable={
                     <ContentEditable
@@ -109,7 +158,6 @@ export default function RichTextEditor() {
                 ErrorBoundary={LexicalErrorBoundary}
             />
             <HistoryPlugin/>
-            <AutoFocusPlugin/>
             {/*
              Demostración de cómo añadir un plugin a Lexical:
              <EditorOnChange onChange={onChange}/> 
