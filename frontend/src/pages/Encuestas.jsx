@@ -12,21 +12,23 @@ const Encuestas = () => {
       .catch(err => console.error('Error al cargar encuestas:', err));
   }, []);
 
+  // Actualiza la respuesta del usuario para una pregunta específica de una encuesta
   const handleChange = (encuestaId, preguntaId, value) => {
     setRespuestas(prev => ({
       ...prev,
       [encuestaId]: {
         ...prev[encuestaId],
-        [preguntaId]: value
+        [preguntaId]: value,
       }
     }));
   };
 
+  // Envía la respuesta para una pregunta específica
   const handleSubmit = async (e, encuestaId, preguntaId) => {
     e.preventDefault();
 
     const respuesta = respuestas[encuestaId]?.[preguntaId];
-    if (!respuesta || respuesta.trim() === '') {
+    if (!respuesta || (typeof respuesta === 'string' && respuesta.trim() === '')) {
       setMensaje('Por favor, responde la pregunta antes de enviar.');
       return;
     }
@@ -36,14 +38,14 @@ const Encuestas = () => {
         preguntaId,
         respuesta
       });
-
       setMensaje('Gracias por tu respuesta.');
 
+      // Limpia la respuesta del formulario para esa pregunta
       setRespuestas(prev => ({
         ...prev,
         [encuestaId]: {
           ...prev[encuestaId],
-          [preguntaId]: ''
+          [preguntaId]: '',
         }
       }));
     } catch (err) {
@@ -72,13 +74,13 @@ const Encuestas = () => {
 
               {['Cerrada', 'Opción múltiple'].includes(pregunta.tipo) ? (
                 pregunta.opciones.map((opcion, idx) => (
-                  <label key={idx} className="block">
+                  <label key={idx} className="block cursor-pointer">
                     <input
                       type="radio"
                       name={pregunta._id}
                       value={opcion}
                       checked={respuestas[encuesta._id]?.[pregunta._id] === opcion}
-                      onChange={(e) => handleChange(encuesta._id, pregunta._id, e.target.value)}
+                      onChange={e => handleChange(encuesta._id, pregunta._id, e.target.value)}
                       className="mr-2"
                       required
                     />
@@ -89,7 +91,7 @@ const Encuestas = () => {
                 <textarea
                   placeholder="Escribe tu respuesta..."
                   value={respuestas[encuesta._id]?.[pregunta._id] || ''}
-                  onChange={(e) => handleChange(encuesta._id, pregunta._id, e.target.value)}
+                  onChange={e => handleChange(encuesta._id, pregunta._id, e.target.value)}
                   className="w-full border rounded p-2"
                   required
                 />

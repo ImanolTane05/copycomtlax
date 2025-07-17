@@ -31,7 +31,7 @@ const AdminEncuestas = () => {
   }, [token]);
 
   const cargarResultados = async (id) => {
-    if (resultados[id]) return; // Evita recarga
+    if (resultados[id]) return;
 
     try {
       const res = await axios.get(`http://localhost:5000/api/encuestas/resultados/${id}`, {
@@ -40,7 +40,6 @@ const AdminEncuestas = () => {
       setResultados(prev => ({ ...prev, [id]: res.data }));
       setError(null);
     } catch (err) {
-      console.error(err);
       setError('Error al cargar resultados');
     }
   };
@@ -54,6 +53,38 @@ const AdminEncuestas = () => {
     return conteo;
   };
 
+  const eliminarEncuesta = async (id) => {
+    if (!window.confirm('¿Eliminar esta encuesta?')) return;
+
+    try {
+      await axios.delete(`http://localhost:5000/api/encuestas/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setEncuestas(encuestas.filter(e => e._id !== id));
+    } catch (err) {
+      setError('Error al eliminar la encuesta');
+    }
+  };
+
+  const cerrarEncuesta = async (id) => {
+    try {
+      await axios.patch(`http://localhost:5000/api/encuestas/${id}/cerrar`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const actualizadas = encuestas.map(e =>
+        e._id === id ? { ...e, cerrada: true } : e
+      );
+      setEncuestas(actualizadas);
+    } catch (err) {
+      setError('No se pudo cerrar la encuesta');
+    }
+  };
+
+  const editarEncuesta = (id) => {
+    // Puedes redirigir a otra ruta o abrir un modal para editar
+    alert(`Redirigir a editar encuesta con ID: ${id}`);
+  };
+
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Resultados de Encuestas</h1>
@@ -62,10 +93,39 @@ const AdminEncuestas = () => {
 
       {encuestas.map(encuesta => (
         <div key={encuesta._id} className="mb-8 border p-4 rounded shadow">
-          <h2 className="font-semibold mb-2">{encuesta.titulo}</h2>
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="font-semibold text-lg">{encuesta.titulo}</h2>
+              <p className="text-sm text-gray-500">Fecha: {new Date(encuesta.fechaCreacion).toLocaleDateString()}</p>
+              {encuesta.cerrada && <span className="text-red-600 font-medium">Encuesta cerrada</span>}
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => editarEncuesta(encuesta._id)}
+                className="px-2 py-1 bg-yellow-400 text-black rounded text-sm"
+              >
+                Editar
+              </button>
+              <button
+                onClick={() => eliminarEncuesta(encuesta._id)}
+                className="px-2 py-1 bg-red-500 text-white rounded text-sm"
+              >
+                Eliminar
+              </button>
+              {!encuesta.cerrada && (
+                <button
+                  onClick={() => cerrarEncuesta(encuesta._id)}
+                  className="px-2 py-1 bg-gray-700 text-white rounded text-sm"
+                >
+                  Cerrar
+                </button>
+              )}
+            </div>
+          </div>
+
           <button
             onClick={() => cargarResultados(encuesta._id)}
-            className="mb-4 px-3 py-1 bg-green-600 text-white rounded"
+            className="mt-3 mb-4 px-3 py-1 bg-green-600 text-white rounded"
           >
             Ver resultados
           </button>

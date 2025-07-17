@@ -17,7 +17,9 @@ const EncuestaSchema = new mongoose.Schema({
   titulo: { type: String, required: true },
   preguntas: [PreguntaSchema],
   creadaPor: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  fechaCreacion: { type: Date, default: Date.now }
+  fechaCreacion: { type: Date, default: Date.now },
+  fechaPublicacion: { type: Date, default: Date.now }, // nueva
+  cerrada: { type: Boolean, default: false } // nueva
 });
 
 module.exports = mongoose.model('Encuesta', EncuestaSchema);

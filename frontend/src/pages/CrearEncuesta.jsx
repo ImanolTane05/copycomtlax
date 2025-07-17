@@ -25,10 +25,13 @@ const CrearEncuesta = () => {
       }
     }
 
-    setPreguntas([...preguntas, {
-      ...nuevaPregunta,
-      opciones: nuevaPregunta.tipo === 'Abierta' ? [] : nuevaPregunta.opciones
-    }]);
+    setPreguntas([
+      ...preguntas,
+      {
+        ...nuevaPregunta,
+        opciones: nuevaPregunta.tipo === 'Abierta' ? [] : nuevaPregunta.opciones,
+      },
+    ]);
 
     setNuevaPregunta({ tipo: '', texto: '', opciones: [''] });
     setMostrarPopup(false);
@@ -85,7 +88,9 @@ const CrearEncuesta = () => {
           <strong>{preg.tipo}:</strong> {preg.texto}
           {preg.opciones?.length > 0 && (
             <ul className="list-disc ml-6">
-              {preg.opciones.map((op, j) => <li key={j}>{op}</li>)}
+              {preg.opciones.map((op, j) => (
+                <li key={j}>{op}</li>
+              ))}
             </ul>
           )}
         </div>
@@ -105,11 +110,21 @@ const CrearEncuesta = () => {
           <label>Tipo:</label>
           <select
             value={nuevaPregunta.tipo}
-            onChange={e => setNuevaPregunta({ ...nuevaPregunta, tipo: e.target.value })}
+            onChange={e =>
+              setNuevaPregunta({
+                ...nuevaPregunta,
+                tipo: e.target.value,
+                opciones: e.target.value === 'Abierta' ? [] : [''],
+              })
+            }
             className="border p-1 w-full mb-2"
           >
             <option value="">Seleccione</option>
-            {tipos.map(tipo => <option key={tipo} value={tipo}>{tipo}</option>)}
+            {tipos.map(tipo => (
+              <option key={tipo} value={tipo}>
+                {tipo}
+              </option>
+            ))}
           </select>
 
           <label>Texto:</label>
@@ -137,11 +152,14 @@ const CrearEncuesta = () => {
                 />
               ))}
               <button
-                onClick={() => setNuevaPregunta({
-                  ...nuevaPregunta,
-                  opciones: [...nuevaPregunta.opciones, '']
-                })}
+                onClick={() =>
+                  setNuevaPregunta({
+                    ...nuevaPregunta,
+                    opciones: [...nuevaPregunta.opciones, ''],
+                  })
+                }
                 className="mb-2 px-2 py-1 bg-gray-300 rounded"
+                type="button"
               >
                 + Agregar opción
               </button>
@@ -152,12 +170,14 @@ const CrearEncuesta = () => {
             <button
               onClick={agregarPregunta}
               className="bg-blue-600 text-white px-3 py-1 rounded"
+              type="button"
             >
               Guardar pregunta
             </button>
             <button
               onClick={() => setMostrarPopup(false)}
               className="bg-gray-400 text-white px-3 py-1 rounded"
+              type="button"
             >
               Cancelar
             </button>
