@@ -23,7 +23,7 @@ import {
     REMOVE_LIST_COMMAND,
 } from '@lexical/list';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import {$isDecoratedBlockNode} from '@lexical/react/LexicalDecoratorBlockNode';
+import {$isDecoratedBlockNode, $isDecoratorBlockNode} from '@lexical/react/LexicalDecoratorBlockNode';
 import { INSERT_HORIZONTAL_RULE_COMMAND } from '@lexical/react/LexicalHorizontalRuleNode';
 import {
     $createHeadingNode,
@@ -62,6 +62,14 @@ import {
     UNDO_COMMAND
 } from 'lexical';
 import { useCallback,useEffect,useState } from 'react';
+
+// import useModal from '../../hooks/useModal';
+import DropDown, {DropDownItem} from '../../ui/DropDown';
+import {getSelectedNode} from '../../utils/getSelectedNode';
+import {sanitizeUrl} from '../../utils/url';
+// import {InsertInlineImageDialog} from '../InlineImagePlugin';
+// import {InsertTableDialog} from '../TablePlugin';
+
 
 export default function ToolbarPlugin() {
     const [editor]=useLexicalComposerContext();
@@ -201,11 +209,99 @@ export default function ToolbarPlugin() {
 
     const clearFormatting=useCallback(()=> {
         activeEditor.update(()=>{
+            const selection=$getSelection();
             if ($isRangeSelection(selection)) {
                 const anchor=selection.anchor;
                 const focus=selection.focus;
                 const nodes=selection.getNodes();
+
+                if (anchor.key===focus.key&&anchor.offset===focus.offset) {
+                    return;
+                }
+
+                nodes.forEach((node,idx)=> {
+                    // Dividir el primer y último nodo por la selección
+                    // Para no formatear texto no seleccionado dentro de dichos nodos
+                    if ($isTextNode(node)) {
+                        if (idx===0&&anchor.offset!=0) {
+                            node=node.splitText(anchor.offset)[1]||node;
+                        }
+                        if (idx===nodes.length-1) {
+                            node=node.splitText(focus.offset)[0]||node;
+                        }
+                        if (node.__style!=='') {
+                            node.setStyle('');
+                        }
+                        if (node.__format!==0) {
+                            node.setFormat(0);
+                            $getNearestBlockElementAncestorOrThrow(node).setFormat('');
+                        }
+                    } else if ($isHeadingNode(node)||$isQuoteNode(node)) {
+                        node.replace($createParagraphNode(node),true); 
+                    } else if ($isDecoratorBlockNode(node)) {
+                        node.setFormat('');
+                    }
+                });
             }
-        })
-    });
+        });
+    },[activeEditor]);
+
+    const insertLink=useCallback(()=> {
+        if(!isLink) {
+            editor.dispatchCommand(TOGGLE_LINK_COMMAND,sanitizeUrl('https://'));
+        } else {
+            editor.dispatchCommand(TOGGLE_LINK_COMMAND,null);
+        }
+    },[editor,isLink]);
+
+    const onCodeLanguageSelect=useCallback(
+        (value) => {
+            activeEditor.update(()=> {
+                if (selectedElementKey!=null) {
+                    const node=$getNodeByKey(selectedElementKey);
+                    if ($isCodeNode(node)) {
+                        node.setLanguage(value);
+                    }
+                }
+            });
+        },
+        [activeEditor,selectedElementKey],
+    );
+
+    return (
+        <div className="toolbar">
+            <button
+                disabled={!canUndo||!isEditable}
+                onClick={()=>{
+                    activeEditor.dispatchCommand(UNDO_COMMAND,undefined);
+                }}
+                title={'Deshacer (Ctrl+Z)'}
+                type="button"
+                className="toolbar-item spaced"
+                aria-label="Deshacer"
+            >
+                <i className="format undo"/>
+            </button>
+            <button
+                disabled={!canUndo||!isEditable}
+                onClick={()=> {
+                    activeEditor.dispatchCommand(REDO_COMMAND,undefined);
+                }}
+                title={"Rehacer (Ctrl+Y)"}
+                type="button"
+                className="toolbar-item"
+                aria-label="Rehacer"
+            >
+                <i className="format redo"/>
+            </button>
+            <Divider/>
+            {blockType in blockTypeToBlockName&&activeEditor===editor&& (
+                <>
+                    <>
+
+                    </>
+                </>
+            )}
+        </div>
+    );
 }
