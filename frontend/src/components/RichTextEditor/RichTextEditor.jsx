@@ -26,15 +26,15 @@ import theme from '../themes/EditorTheme/EditorTheme';
 import {Actions} from './Actions';
 /*DESCOMENTAR AL AÑADIR PLUGINS*/
 // import DragDropPaste from './plugins/DragDropPastePlugin';
-// import FloatingLinkEditorPlugin from './plugins/FloatingLinkEditorPlugin';
-// import LinkPlugin from './plugins/LinkPlugin';
-// import ToolbarPlugin from './plugins/ToolbarPlugin';
+import FloatingLinkEditorPlugin from './plugins/FloatingLinkEditorPlugin';
+import LinkPlugin from './plugins/LinkPlugin';
+import ToolbarPlugin from './plugins/ToolbarPlugin';
 // import TreeViewPlugin from './plugins/TreeViewPlugin';
-// import ContentEditable from './ui/ContentEditable';
+import ContentEditable from './ui/ContentEditable';
 import Placeholder from './ui/Placeholder';
 // import LexicalAutoLinkPlugin from './plugins/AutoLinkPlugin/index';
 // import CodeHighlightPlugin from './plugins/CodeHighlightPlugin';
-// import InlineImagePlugin from './plugins/InlineImagePlugin';
+import InlineImagePlugin from './plugins/InlineImagePlugin';
 
 const loadContent=()=> {
     // Editor 'vacío' (ver si puedo indexar de BD luego)
