@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *

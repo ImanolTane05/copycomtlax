@@ -60,12 +60,10 @@ export function InsertInlineImageDialog({
   const isDisabled = src === '';
 
   const handleShowCaptionChange = (e) => {
-    e.preventDefault();
     setShowCaption(e.target.checked);
   }
 
   const handlePositionChange = (e) => {
-    e.preventDefault();
     setPosition(e.target.value);
   }
 
@@ -85,7 +83,6 @@ export function InsertInlineImageDialog({
   useEffect(() => {
     hasModifier.current = false;
     const handler = (e) => {
-        e.preventDefault();
         hasModifier.current = e.altKey;
     }
     document.addEventListener('keydown', handler);
@@ -104,7 +101,7 @@ export function InsertInlineImageDialog({
     <>
       <div style={{marginBottom: '1em'}}>
         <FileInput
-          label="Image Upload"
+          label="Imagen"
           onChange={loadImage}
           accept="image/*"
           data-test-id="image-modal-file-upload"
@@ -112,23 +109,23 @@ export function InsertInlineImageDialog({
       </div>
       <div style={{marginBottom: '1em'}}>
         <TextInput
-          label="Alt Text"
-          placeholder="Descriptive alternative text"
+          label="Texto alternativo"
+          placeholder="Texto alternativo descriptivo"
           onChange={setAltText}
           value={altText}
           data-test-id="image-modal-alt-text-input"
         />
       </div>
 
-      <Select style={{marginBottom: '1em', width: '290px'}} label="Position" name="position" id="position-select" onChange={handlePositionChange}>
-        <option value="left">Left</option>
-        <option value="right">Right</option>
-        <option value="full">Full Width</option>
+      <Select style={{marginBottom: '1em', width: '290px'}} label="Posición" name="position" id="position-select" onChange={handlePositionChange}>
+        <option value="left">Izquierda</option>
+        <option value="right">Derecha</option>
+        <option value="full">Todo el ancho</option>
       </Select>
 
       <div className="Input__wrapper">
         <input id="caption" type="checkbox" checked={showCaption} onChange={handleShowCaptionChange} />  
-        <label htmlFor="caption">Show Caption</label>
+        <label htmlFor="caption">Mostrar subtítulo</label>
       </div>
       
       <DialogActions>

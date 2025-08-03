@@ -199,7 +199,7 @@ export default function DropDown({
             {showDropDown &&
                 createPortal(
                     <DropDownItems dropDownRef={dropDownRef} onClose={handleClose}>
-                        children
+                        {children}
                     </DropDownItems>,
                     document.body,
             )}

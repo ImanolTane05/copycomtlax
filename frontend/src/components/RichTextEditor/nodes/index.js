@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- */
+*/
 
 import {CodeHighlightNode, CodeNode} from '@lexical/code';
 import {AutoLinkNode, LinkNode} from '@lexical/link';
@@ -15,12 +15,11 @@ import {HorizontalRuleNode} from '@lexical/react/LexicalHorizontalRuleNode';
 import {HeadingNode, QuoteNode} from '@lexical/rich-text';
 import {TableNode, TableCellNode, TableRowNode} from '@lexical/table';
 
-/* Descomentar al crear nodos
-import {EmojiNode} from './EmojiNode'
-import {InlineImageNode} from './InlineImageNode'
-import {TweetNode} from './TweetNode'
-import {YouTubeNode} from './YouTubeNode'
-*/
+// Descomentar al crear nodos
+//import {EmojiNode} from './EmojiNode'
+import {InlineImageNode} from './InlineImageNode';
+//import {TweetNode} from './TweetNode'
+//import {YouTubeNode} from './YouTubeNode'
 
 const Nodes=[
     CodeNode,
@@ -28,7 +27,7 @@ const Nodes=[
     //EmojiNode,
     HeadingNode,
     HorizontalRuleNode,
-    //InlineImageNode,
+    InlineImageNode,
     AutoLinkNode,
     LinkNode,
     ListNode,
@@ -43,4 +42,4 @@ const Nodes=[
     //YouTubeNode,
 ];
 
-export default Nodes
+export default Nodes;

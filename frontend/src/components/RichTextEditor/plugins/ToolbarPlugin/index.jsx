@@ -53,7 +53,6 @@ import {
     CAN_REDO_COMMAND,
     CAN_UNDO_COMMAND,
     COMMAND_PRIORITY_CRITICAL,
-    DEPRECATED_$isGridSelection,
     FORMAT_ELEMENT_COMMAND,
     FORMAT_TEXT_COMMAND,
     INDENT_CONTENT_COMMAND,
@@ -63,6 +62,7 @@ import {
     UNDO_COMMAND
 } from 'lexical';
 import { useCallback,useEffect,useState } from 'react';
+import { IS_APPLE } from '@lexical/utils';
 
 import useModal from '../../hooks/useModal';
 import DropDown, {DropDownItem} from '../../ui/DropDown';
@@ -72,18 +72,18 @@ import {InsertInlineImageDialog} from '../InlineImagePlugin';
 import {InsertTableDialog} from '../TablePlugin';
 
 const blockTypeToBlockName = {
-  bullet: 'Bulleted List',
-  check: 'Check List',
-  code: 'Code Block',
-  h1: 'Heading 1',
-  h2: 'Heading 2',
-  h3: 'Heading 3',
-  h4: 'Heading 4',
-  h5: 'Heading 5',
-  h6: 'Heading 6',
-  number: 'Numbered List',
+  bullet: 'Lista',
+  check: 'Lista de verificación',
+  code: 'Bloque de código',
+  h1: 'Título 1',
+  h2: 'Título 2',
+  h3: 'Título 3',
+  h4: 'Título 4',
+  h5: 'Título 5',
+  h6: 'Título 6',
+  number: 'Lista numérica',
   paragraph: 'Normal',
-  quote: 'Quote',
+  quote: 'Cita',
 }
 
 const rootTypeToRootName = {
@@ -120,8 +120,7 @@ function BlockFormatDropDown({
     editor.update(() => {
       const selection = $getSelection();
       if (
-        $isRangeSelection(selection) ||
-        DEPRECATED_$isGridSelection(selection)
+        $isRangeSelection(selection)
       ) {
         $setBlocksType(selection, () => $createParagraphNode());
       }
@@ -133,8 +132,7 @@ function BlockFormatDropDown({
       editor.update(() => {
         const selection = $getSelection();
         if (
-          $isRangeSelection(selection) ||
-          DEPRECATED_$isGridSelection(selection)
+          $isRangeSelection(selection)
         ) {
           $setBlocksType(selection, () => $createHeadingNode(headingSize));
         }
@@ -171,8 +169,7 @@ function BlockFormatDropDown({
       editor.update(() => {
         const selection = $getSelection();
         if (
-          $isRangeSelection(selection) ||
-          DEPRECATED_$isGridSelection(selection)
+          $isRangeSelection(selection)
         ) {
           $setBlocksType(selection, () => $createQuoteNode());
         }
@@ -186,8 +183,7 @@ function BlockFormatDropDown({
         let selection = $getSelection();
 
         if (
-          $isRangeSelection(selection) ||
-          DEPRECATED_$isGridSelection(selection)
+          $isRangeSelection(selection)
         ) {
           if (selection.isCollapsed()) {
             $setBlocksType(selection, () => $createCodeNode());
@@ -221,49 +217,49 @@ function BlockFormatDropDown({
         className={'item ' + dropDownActiveClass(blockType === 'h1')}
         onClick={() => formatHeading('h1')}>
         <i className="icon h1" />
-        <span className="text">Heading 1</span>
+        <span className="text">Título 1</span>
       </DropDownItem>
       <DropDownItem
         className={'item ' + dropDownActiveClass(blockType === 'h2')}
         onClick={() => formatHeading('h2')}>
         <i className="icon h2" />
-        <span className="text">Heading 2</span>
+        <span className="text">Título 2</span>
       </DropDownItem>
       <DropDownItem
         className={'item ' + dropDownActiveClass(blockType === 'h3')}
         onClick={() => formatHeading('h3')}>
         <i className="icon h3" />
-        <span className="text">Heading 3</span>
+        <span className="text">Título 3</span>
       </DropDownItem>
       <DropDownItem
         className={'item ' + dropDownActiveClass(blockType === 'bullet')}
         onClick={formatBulletList}>
         <i className="icon bullet-list" />
-        <span className="text">Bullet List</span>
+        <span className="text">Lista</span>
       </DropDownItem>
       <DropDownItem
         className={'item ' + dropDownActiveClass(blockType === 'number')}
         onClick={formatNumberedList}>
         <i className="icon numbered-list" />
-        <span className="text">Numbered List</span>
+        <span className="text">Lista numérica</span>
       </DropDownItem>
       <DropDownItem
         className={'item ' + dropDownActiveClass(blockType === 'check')}
         onClick={formatCheckList}>
         <i className="icon check-list" />
-        <span className="text">Check List</span>
+        <span className="text">Lista de verificación</span>
       </DropDownItem>
       <DropDownItem
         className={'item ' + dropDownActiveClass(blockType === 'quote')}
         onClick={formatQuote}>
         <i className="icon quote" />
-        <span className="text">Quote</span>
+        <span className="text">Cita</span>
       </DropDownItem>
       <DropDownItem
         className={'item ' + dropDownActiveClass(blockType === 'code')}
         onClick={formatCode}>
         <i className="icon code" />
-        <span className="text">Code Block</span>
+        <span className="text">Bloque de código</span>
       </DropDownItem>
     </DropDown>
   );
@@ -284,9 +280,9 @@ export default function ToolbarPlugin() {
     const [isBold,setIsBold]=useState(false);
     const [isItalic,setIsItalic]=useState(false);
     const [isUnderline,setIsUnderline]=useState(false);
-    const [isStrikeThrough,setIsStrikeThrough]=useState(false);
+    const [isStrikethrough,setIsStrikethrough]=useState(false);
     const [isSubscript,setIsSubscript]=useState(false);
-    const [isSuperScript,setIsSuperScript]=useState(false);
+    const [isSuperscript,setIsSuperscript]=useState(false);
     const [isCode,setIsCode]=useState(false);
     const [canUndo,setCanUndo]=useState(false);
     const [canRedo,setCanRedo]=useState(false);
@@ -303,7 +299,6 @@ export default function ToolbarPlugin() {
                 anchorNode.getKey()==='root'
                     ? anchorNode
                     : $findMatchingParent(anchorNode, (e) => {
-                        e.preventDefault();
                         const parent=e.getParent();
                         return parent!==null&&$isRootOrShadowRoot(parent);
                     });
@@ -318,9 +313,9 @@ export default function ToolbarPlugin() {
             setIsBold(selection.hasFormat('bold'));
             setIsItalic(selection.hasFormat('italic'));
             setIsUnderline(selection.hasFormat('underline'));
-            setIsStrikeThrough(selection.hasFormat('strikethrough'));
+            setIsStrikethrough(selection.hasFormat('strikethrough'));
             setIsSubscript(selection.hasFormat('subscript'));
-            setIsSuperScript(selection.hasFormat('superscript'));
+            setIsSuperscript(selection.hasFormat('superscript'));
             setIsCode(selection.hasFormat('code'));
             setIsRTL($isParentElementRTL(selection));
 
@@ -506,7 +501,7 @@ export default function ToolbarPlugin() {
           <Divider />
           <DropDown
             disabled={!isEditable}
-            buttonLabel="Align"
+            buttonLabel="Alinear"
             buttonIconClassName="icon left-align"
             buttonClassName="toolbar-item spaced alignment"
             buttonAriaLabel="Formatting options for text alignment">
@@ -629,7 +624,7 @@ export default function ToolbarPlugin() {
               activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, 'code')
             }}
             className={'toolbar-item spaced ' + (isCode ? 'active' : '')}
-            title="Insert code block"
+            title="Insertar bloque de código"
             type="button"
             aria-label="Insert code block">
             <i className="format code" />
@@ -639,7 +634,7 @@ export default function ToolbarPlugin() {
             onClick={insertLink}
             className={'toolbar-item spaced ' + (isLink ? 'active' : '')}
             aria-label="Insert link"
-            title="Insert link"
+            title="Insertar enlace"
             type="button">
             <i className="format link" />
           </button>
@@ -719,7 +714,7 @@ export default function ToolbarPlugin() {
               <DropDown
                 disabled={!isEditable}
                 buttonClassName="toolbar-item spaced"
-                buttonLabel="Insert"
+                buttonLabel="Insertar"
                 buttonAriaLabel="Insert specialized editor node"
                 buttonIconClassName="icon plus">
                 <DropDownItem
@@ -735,7 +730,7 @@ export default function ToolbarPlugin() {
                 </DropDownItem>
                 <DropDownItem
                   onClick={() => {
-                    showModal('Insert Inline Image', (onClose) => (
+                    showModal('Insertar Imagen en Renglón', (onClose) => (
                       <InsertInlineImageDialog
                         activeEditor={activeEditor}
                         onClose={onClose}
@@ -748,7 +743,7 @@ export default function ToolbarPlugin() {
                 </DropDownItem>
                 <DropDownItem
                   onClick={() => {
-                    showModal('Insert Table', (onClose) => (
+                    showModal('Insertar Tabla', (onClose) => (
                       <InsertTableDialog
                         activeEditor={activeEditor}
                         onClose={onClose}
