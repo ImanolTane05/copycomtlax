@@ -1,40 +1,35 @@
-import React, { useState } from 'react';
+// ...mantener importaciones
 
 const CrearEncuesta = () => {
   const [titulo, setTitulo] = useState('');
   const [preguntas, setPreguntas] = useState([]);
   const [mostrarPopup, setMostrarPopup] = useState(false);
-  const [nuevaPregunta, setNuevaPregunta] = useState({
-    tipo: '',
-    texto: '',
-    opciones: [''],
-  });
+  const [nuevaPregunta, setNuevaPregunta] = useState({ tipo: '', texto: '', opciones: [''] });
 
   const tipos = ['Abierta', 'Cerrada', 'Opción múltiple'];
 
   const agregarPregunta = () => {
+    if (!nuevaPregunta.texto || !nuevaPregunta.tipo) return alert('Completa todos los campos');
     setPreguntas([...preguntas, nuevaPregunta]);
     setNuevaPregunta({ tipo: '', texto: '', opciones: [''] });
     setMostrarPopup(false);
   };
 
+  const eliminarPregunta = (index) => {
+    const actualizadas = [...preguntas];
+    actualizadas.splice(index, 1);
+    setPreguntas(actualizadas);
+  };
+
   const guardarEncuesta = async () => {
     const token = localStorage.getItem('token');
-
     try {
       const res = await fetch('http://localhost:5000/api/encuestas', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ titulo, preguntas }),
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ titulo, preguntas })
       });
-
-      if (!res.ok) {
-        throw new Error('Fallo en guardar encuesta');
-      }
-
+      if (!res.ok) throw new Error('Fallo en guardar encuesta');
       alert('✅ Encuesta guardada correctamente');
       setTitulo('');
       setPreguntas([]);
@@ -79,9 +74,9 @@ const CrearEncuesta = () => {
                 type="text"
                 value={op}
                 onChange={(e) => {
-                  const opcionesActuales = [...nuevaPregunta.opciones];
-                  opcionesActuales[i] = e.target.value;
-                  setNuevaPregunta({ ...nuevaPregunta, opciones: opcionesActuales });
+                  const nuevasOpciones = [...nuevaPregunta.opciones];
+                  nuevasOpciones[i] = e.target.value;
+                  setNuevaPregunta({ ...nuevaPregunta, opciones: nuevasOpciones });
                 }}
               />
             ))}
@@ -135,15 +130,21 @@ const CrearEncuesta = () => {
       </button>
 
       {preguntas.map((preg, i) => (
-        <div key={i} className="mb-4 p-4 border rounded bg-gray-50">
+        <div key={i} className="mb-4 p-4 border rounded bg-gray-100">
           <strong>{preg.tipo}:</strong> {preg.texto}
           {preg.opciones?.length > 0 && (
             <ul className="list-disc ml-5 mt-2">
-              {preg.opciones.map((op, j) => (
-                <li key={j}>{op}</li>
-              ))}
+              {preg.opciones.map((op, j) => <li key={j}>{op}</li>)}
             </ul>
           )}
+          <div className="flex justify-end space-x-2 mt-2">
+            <button
+              className="text-sm bg-red-500 text-white px-2 py-1 rounded"
+              onClick={() => eliminarPregunta(i)}
+            >
+              🗑 Eliminar
+            </button>
+          </div>
         </div>
       ))}
 

@@ -1,182 +1,99 @@
-const Encuesta = require('../models/Encuesta');
-const Respuesta = require('../models/Respuesta');
+const Encuesta = require("../models/encuesta");
 
-// Crear nueva encuesta (solo admin)
-exports.crearEncuesta = async (req, res) => {
+const crearEncuesta = async (req, res) => {
   try {
-    const { titulo, preguntas } = req.body;
-
-    if (!titulo || !Array.isArray(preguntas) || preguntas.length === 0) {
-      return res.status(400).json({ mensaje: 'Datos de encuesta incompletos' });
-    }
-
-    // Validación de preguntas
-    for (const pregunta of preguntas) {
-      if (!pregunta.texto || !pregunta.tipo) {
-        return res.status(400).json({ mensaje: 'Cada pregunta debe tener texto y tipo' });
-      }
-
-      const tiposPermitidos = ['Abierta', 'Cerrada', 'Opción múltiple'];
-      if (!tiposPermitidos.includes(pregunta.tipo)) {
-        return res.status(400).json({ mensaje: 'Tipo de pregunta inválido: ' + pregunta.tipo });
-      }
-
-      if (['Cerrada', 'Opción múltiple'].includes(pregunta.tipo)) {
-        if (!Array.isArray(pregunta.opciones) || pregunta.opciones.some(op => !op.trim())) {
-          return res.status(400).json({ mensaje: 'Opciones inválidas en pregunta cerrada o múltiple' });
-        }
-      }
-    }
-
-    const encuesta = new Encuesta({
-      titulo,
-      preguntas,
-      creadaPor: req.user?.id || null,
-      fechaCreacion: new Date(),
-      cerrada: false, // encuesta abierta al crear
+    const nuevaEncuesta = new Encuesta({
+      ...req.body,
+      estaCerrada: false, // ← CAMBIO AQUÍ
     });
-
-    await encuesta.save();
-    res.status(201).json(encuesta);
-  } catch (err) {
-    console.error('❌ Error al crear encuesta:', err);
-    res.status(500).json({ mensaje: 'Error al crear encuesta' });
+    const encuestaGuardada = await nuevaEncuesta.save();
+    res.status(201).json(encuestaGuardada);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
 };
 
-// Obtener todas las encuestas (público)
-exports.obtenerEncuestas = async (req, res) => {
+const obtenerEncuestas = async (req, res) => {
   try {
-    const encuestas = await Encuesta.find().sort({ fechaCreacion: -1 });
+    const encuestas = await Encuesta.find();
     res.json(encuestas);
-  } catch (err) {
-    console.error('❌ Error al obtener encuestas:', err);
-    res.status(500).json({ mensaje: 'Error al obtener encuestas' });
-  }
-};
-
-// Responder encuesta (público)
-exports.responderEncuesta = async (req, res) => {
-  const { id: encuestaId } = req.params;
-  const { preguntaId, respuesta } = req.body;
-
-  try {
-    const encuesta = await Encuesta.findById(encuestaId);
-    if (!encuesta) return res.status(404).json({ mensaje: 'Encuesta no encontrada' });
-
-    if (encuesta.cerrada) {
-      return res.status(403).json({ mensaje: 'Encuesta cerrada. No se pueden enviar respuestas.' });
-    }
-
-    const pregunta = encuesta.preguntas.find(p => p._id.toString() === preguntaId);
-    if (!pregunta) return res.status(404).json({ mensaje: 'Pregunta no encontrada en encuesta' });
-
-    // Validar formato según tipo
-    if (pregunta.tipo === 'Abierta') {
-      if (!respuesta || typeof respuesta !== 'string') {
-        return res.status(400).json({ mensaje: 'Respuesta inválida para pregunta abierta' });
-      }
-    } else {
-      if (!pregunta.opciones.includes(respuesta)) {
-        return res.status(400).json({ mensaje: 'Respuesta no coincide con las opciones disponibles' });
-      }
-    }
-
-    const nuevaRespuesta = new Respuesta({
-      encuestaId,
-      preguntaId,
-      respuesta,
-      usuarioId: req.user ? req.user.id : null
-    });
-
-    await nuevaRespuesta.save();
-    res.status(201).json({ mensaje: 'Respuesta guardada correctamente' });
   } catch (error) {
-    console.error('❌ Error al responder encuesta:', error);
-    res.status(500).json({ mensaje: 'Error al guardar la respuesta' });
+    res.status(500).json({ error: error.message });
   }
 };
 
-// Obtener resultados (solo admin)
-exports.obtenerResultados = async (req, res) => {
+const responderEncuesta = async (req, res) => {
   try {
-    const encuestaId = req.params.id;
-    const encuesta = await Encuesta.findById(encuestaId);
-    if (!encuesta) return res.status(404).json({ mensaje: 'Encuesta no encontrada' });
+    const { id } = req.params;
+    const { respuestas } = req.body;
 
-    const respuestas = await Respuesta.find({ encuestaId });
+    const encuesta = await Encuesta.findById(id);
+    if (!encuesta) return res.status(404).json({ error: "Encuesta no encontrada" });
 
-    const resultados = encuesta.preguntas.map(pregunta => {
-      const respuestasDePregunta = respuestas.filter(r => r.preguntaId.toString() === pregunta._id.toString());
-      return {
-        _id: pregunta._id,
-        texto: pregunta.texto,
-        tipo: pregunta.tipo,
-        opciones: pregunta.opciones,
-        respuestas: respuestasDePregunta.map(r => ({ respuesta: r.respuesta }))
-      };
-    });
-
-    res.json(resultados);
-  } catch (err) {
-    console.error('❌ Error al obtener resultados:', err);
-    res.status(500).json({ mensaje: 'Error al obtener resultados' });
-  }
-};
-
-// Actualizar encuesta (solo admin)
-exports.actualizarEncuesta = async (req, res) => {
-  try {
-    const encuestaId = req.params.id;
-    const { titulo, preguntas } = req.body;
-
-    const encuesta = await Encuesta.findById(encuestaId);
-    if (!encuesta) return res.status(404).json({ mensaje: 'Encuesta no encontrada' });
-
-    encuesta.titulo = titulo || encuesta.titulo;
-    if (preguntas && Array.isArray(preguntas)) {
-      encuesta.preguntas = preguntas;
+    if (encuesta.estaCerrada) {
+      return res.status(403).json({ error: "La encuesta está cerrada" });
     }
 
+    encuesta.respuestas.push(...respuestas);
     await encuesta.save();
-    res.json({ mensaje: 'Encuesta actualizada correctamente', encuesta });
+    res.json({ mensaje: "Respuestas guardadas correctamente" });
   } catch (error) {
-    console.error('❌ Error al actualizar encuesta:', error);
-    res.status(500).json({ mensaje: 'Error al actualizar encuesta' });
+    res.status(500).json({ error: error.message });
   }
 };
 
-// Eliminar encuesta (solo admin)
-exports.eliminarEncuesta = async (req, res) => {
+const obtenerResultados = async (req, res) => {
   try {
-    const encuestaId = req.params.id;
-
-    const encuesta = await Encuesta.findByIdAndDelete(encuestaId);
-    if (!encuesta) return res.status(404).json({ mensaje: 'Encuesta no encontrada' });
-
-    // Opcional: eliminar respuestas asociadas
-    await Respuesta.deleteMany({ encuestaId });
-
-    res.json({ mensaje: 'Encuesta eliminada correctamente' });
+    const encuesta = await Encuesta.findById(req.params.id);
+    if (!encuesta) return res.status(404).json({ error: "Encuesta no encontrada" });
+    res.json(encuesta.respuestas);
   } catch (error) {
-    console.error('❌ Error al eliminar encuesta:', error);
-    res.status(500).json({ mensaje: 'Error al eliminar encuesta' });
+    res.status(500).json({ error: error.message });
   }
 };
 
-// Cerrar encuesta (solo admin) - impide más respuestas
-exports.cerrarEncuesta = async (req, res) => {
+const actualizarEncuesta = async (req, res) => {
   try {
-    const encuestaId = req.params.id;
-    const encuesta = await Encuesta.findById(encuestaId);
-    if (!encuesta) return res.status(404).json({ mensaje: 'Encuesta no encontrada' });
+    const encuesta = await Encuesta.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+    if (!encuesta) return res.status(404).json({ error: "Encuesta no encontrada" });
+    res.json(encuesta);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 
-    encuesta.cerrada = true;
+const eliminarEncuesta = async (req, res) => {
+  try {
+    const encuesta = await Encuesta.findByIdAndDelete(req.params.id);
+    if (!encuesta) return res.status(404).json({ error: "Encuesta no encontrada" });
+    res.json({ mensaje: "Encuesta eliminada correctamente" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const cerrarEncuesta = async (req, res) => {
+  try {
+    const encuesta = await Encuesta.findById(req.params.id);
+    if (!encuesta) return res.status(404).json({ error: "Encuesta no encontrada" });
+
+    encuesta.estaCerrada = true; // ← CAMBIO AQUÍ
     await encuesta.save();
 
-    res.json({ mensaje: 'Encuesta cerrada correctamente' });
+    res.json({ mensaje: "Encuesta cerrada correctamente" });
   } catch (error) {
-    console.error('❌ Error al cerrar encuesta:', error);
-    res.status(500).json({ mensaje: 'Error al cerrar encuesta' });
+    res.status(500).json({ error: error.message });
   }
+};
+
+module.exports = {
+  crearEncuesta,
+  obtenerEncuestas,
+  responderEncuesta,
+  obtenerResultados,
+  actualizarEncuesta,
+  eliminarEncuesta,
+  cerrarEncuesta,
 };
