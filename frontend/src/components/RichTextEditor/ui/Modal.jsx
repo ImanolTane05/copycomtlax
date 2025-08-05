@@ -28,15 +28,13 @@ function PortalImpl({
 
     useEffect(()=> {
         let modalOverlayElement=null;
-        const handler=(e)=> {
-            e.preventDefault();
-            if(e.keyCode===27) {
+        const handler=(event)=> {
+            if(event.keyCode===27) {
                 onClose();
             }
         };
-        const clickOutsideHandler=(e)=>{
-            e.preventDefault();
-            const target=e.target;
+        const clickOutsideHandler=(event)=>{
+            const target=event.target;
             if (
                 modalRef.current!==null&&
                 !modalRef.current.contains(target)&&

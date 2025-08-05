@@ -133,7 +133,7 @@ export function InsertInlineImageDialog({
           data-test-id="image-modal-file-upload-btn"
           disabled={isDisabled}
           onClick={() => handleOnClick()}>
-          Confirm
+          Confirmar
         </Button>
       </DialogActions>
     </>

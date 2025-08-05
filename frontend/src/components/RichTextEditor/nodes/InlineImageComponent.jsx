@@ -96,7 +96,7 @@ export function UpdateInlineImageDialog({
   const node = editorState.read(() => $getNodeByKey(nodeKey));
   const [altText, setAltText] = useState(node.getAltText());
   const [showCaption, setShowCaption] = useState(node.getShowCaption());
-  const [position, setPosition] = useState<Position>(node.getPosition());
+  const [position, setPosition] = useState(node.getPosition());
 
   const handleShowCaptionChange = (e) => {
     setShowCaption(e.target.checked);
@@ -118,30 +118,30 @@ export function UpdateInlineImageDialog({
     <>
       <div style={{marginBottom: '1em'}}>
         <TextInput
-          label="Alt Text"
-          placeholder="Descriptive alternative text"
+          label="Texto alternativo"
+          placeholder="Texto alternativo descriptivo"
           onChange={setAltText}
           value={altText}
           data-test-id="image-modal-alt-text-input"
         />
       </div>
 
-      <Select style={{marginBottom: '1em', width: '208px'}} value={position} label="Position" name="position" id="position-select" onChange={handlePositionChange}>
-        <option value="left">Left</option>
-        <option value="right">Right</option>
-        <option value="full">Full Width</option>
+      <Select style={{marginBottom: '1em', width: '208px'}} value={position} label="Posición" name="position" id="position-select" onChange={handlePositionChange}>
+        <option value="left">Izquierda</option>
+        <option value="right">Derecha</option>
+        <option value="full">Todo el ancho</option>
       </Select>
 
       <div className="Input__wrapper">
         <input id="caption" type="checkbox" checked={showCaption} onChange={handleShowCaptionChange} />  
-        <label htmlFor="caption">Show Caption</label>
+        <label htmlFor="caption">Mostrar subtítulo</label>
       </div>
       
       <DialogActions>
         <Button
           data-test-id="image-modal-file-upload-btn"
           onClick={() => handleOnConfirm()}>
-          Confirm
+          Confirmar
         </Button>
       </DialogActions>
     </>
@@ -321,8 +321,9 @@ export default function InlineImageComponent({
           <button
             className="image-edit-button"
             ref={buttonRef}
-            onClick={() => {
-              showModal('Update Inline Image', (onClose) => (
+            onClick={(e) => {
+              e.preventDefault();
+              showModal('Actualizar Imagen en Renglón', (onClose) => (
                 <UpdateInlineImageDialog
                   activeEditor={editor}
                   nodeKey={nodeKey}
@@ -330,7 +331,7 @@ export default function InlineImageComponent({
                 />
               ))
             }}>
-            Edit
+            Editar
           </button>
           <LazyImage
             className={
@@ -359,7 +360,7 @@ export default function InlineImageComponent({
                 }
                 placeholder={
                   <Placeholder className="InlineImageNode__placeholder">
-                    Enter a caption...
+                    Introduzca un subtítulo...
                   </Placeholder>
                 }
                 ErrorBoundary={LexicalErrorBoundary}
