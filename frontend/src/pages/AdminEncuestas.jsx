@@ -1,165 +1,191 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { Bar } from 'react-chartjs-2';
+import { useNavigate } from 'react-router-dom';
 import {
   Chart as ChartJS,
-  BarElement,
   ArcElement,
-  CategoryScale,
-  LinearScale,
   Tooltip,
   Legend,
 } from 'chart.js';
+import { Doughnut } from 'react-chartjs-2';
 
-ChartJS.register(BarElement, ArcElement, CategoryScale, LinearScale, Tooltip, Legend);
+ChartJS.register(ArcElement, Tooltip, Legend);
+
+const fetchEncuestas = async () => {
+  const token = localStorage.getItem('token');
+  const res = await axios.get('http://localhost:5000/api/encuestas/admin', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.data;
+};
+
+const coloresGrafica = [
+  '#2563EB', // azul
+  '#F59E0B', // amarillo
+  '#10B981', // verde
+  '#EF4444', // rojo
+  '#8B5CF6', // morado
+  '#EC4899', // rosa
+];
+
+// Función para convertir conteos a porcentajes con 1 decimal
+function calcularPorcentajes(resumen) {
+  const total = Object.values(resumen).reduce((a, b) => a + b, 0);
+  if (total === 0) return resumen; // evitar división por cero
+  const porcentajes = {};
+  for (const key in resumen) {
+    porcentajes[key] = ((resumen[key] / total) * 100).toFixed(1);
+  }
+  return porcentajes;
+}
 
 const AdminEncuestas = () => {
-  const [encuestas, setEncuestas] = useState([]);
-  const [resultados, setResultados] = useState({});
-  const [error, setError] = useState(null);
-  const token = localStorage.getItem('token');
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!token) {
-      setError('No autenticado. Inicie sesión como administrador.');
-      return;
-    }
+  const { data: encuestas = [], isLoading } = useQuery({
+    queryKey: ['encuestas'],
+    queryFn: fetchEncuestas,
+  });
 
-    axios.get('http://localhost:5000/api/encuestas')
-      .then(res => setEncuestas(res.data))
-      .catch(() => setError('Error al cargar encuestas'));
-  }, [token]);
+  const cerrarMutation = useMutation({
+    mutationFn: (id) =>
+      axios.put(
+        `http://localhost:5000/api/encuestas/cerrar/${id}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        }
+      ),
+    onSuccess: () => queryClient.invalidateQueries(['encuestas']),
+  });
 
-  const cargarResultados = async (id) => {
-    if (resultados[id]) return;
+  const eliminarMutation = useMutation({
+    mutationFn: (id) =>
+      axios.delete(`http://localhost:5000/api/encuestas/${id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      }),
+    onSuccess: () => queryClient.invalidateQueries(['encuestas']),
+  });
 
-    try {
-      const res = await axios.get(`http://localhost:5000/api/encuestas/resultados/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setResultados(prev => ({ ...prev, [id]: res.data }));
-      setError(null);
-    } catch (err) {
-      setError('Error al cargar resultados');
-    }
-  };
+  if (isLoading) return <div className="text-white">Cargando encuestas...</div>;
 
-  const contarOpciones = (respuestas, opciones) => {
-    const conteo = {};
-    opciones.forEach(op => { conteo[op] = 0; });
-    respuestas.forEach(r => {
-      if (conteo[r.respuesta] !== undefined) conteo[r.respuesta]++;
-    });
-    return conteo;
-  };
-
-  const eliminarEncuesta = async (id) => {
-    if (!window.confirm('¿Eliminar esta encuesta?')) return;
-
-    try {
-      await axios.delete(`http://localhost:5000/api/encuestas/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setEncuestas(encuestas.filter(e => e._id !== id));
-    } catch (err) {
-      setError('Error al eliminar la encuesta');
-    }
-  };
-
-  const cerrarEncuesta = async (id) => {
-    try {
-      await axios.patch(`http://localhost:5000/api/encuestas/${id}/cerrar`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const actualizadas = encuestas.map(e =>
-        e._id === id ? { ...e, cerrada: true } : e
-      );
-      setEncuestas(actualizadas);
-    } catch (err) {
-      setError('No se pudo cerrar la encuesta');
-    }
-  };
-
-  const editarEncuesta = (id) => {
-    // Puedes redirigir a otra ruta o abrir un modal para editar
-    alert(`Redirigir a editar encuesta con ID: ${id}`);
-  };
+  if (encuestas.length === 0)
+    return <div className="text-white">No hay encuestas disponibles.</div>;
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Resultados de Encuestas</h1>
-
-      {error && <div className="mb-4 p-2 bg-red-200 text-red-700 rounded">{error}</div>}
-
-      {encuestas.map(encuesta => (
-        <div key={encuesta._id} className="mb-8 border p-4 rounded shadow">
-          <div className="flex justify-between items-center">
+    <div className="min-h-screen bg-[#1f2937] p-6 text-white">
+      <h1 className="text-4xl font-extrabold mb-8">Encuestas - Panel Admin</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {encuestas.map((encuesta) => (
+          <div
+            key={encuesta._id}
+            className="bg-gray-800 rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-shadow flex flex-col justify-between"
+          >
             <div>
-              <h2 className="font-semibold text-lg">{encuesta.titulo}</h2>
-              <p className="text-sm text-gray-500">Fecha: {new Date(encuesta.fechaCreacion).toLocaleDateString()}</p>
-              {encuesta.cerrada && <span className="text-red-600 font-medium">Encuesta cerrada</span>}
+              <h2 className="text-2xl font-semibold mb-2">{encuesta.titulo}</h2>
+              <p className="text-sm text-gray-400 mb-1">
+                Publicado: {new Date(encuesta.fechaPublicacion).toLocaleDateString()}
+              </p>
+              <p className="text-sm mb-4">
+                Estado:{' '}
+                <span
+                  className={`font-semibold ${
+                    encuesta.cerrada ? 'text-red-400' : 'text-green-400'
+                  }`}
+                >
+                  {encuesta.cerrada ? 'Cerrada' : 'Activa'}
+                </span>
+              </p>
+
+              {encuesta.preguntas.length > 0 ? (
+                encuesta.preguntas.map((pregunta) => {
+                  let dataGrafica = null;
+                  let resumenPorcentaje = null;
+
+                  if (
+                    pregunta.tipo === 'Cerrada' ||
+                    pregunta.tipo === 'Opción múltiple'
+                  ) {
+                    resumenPorcentaje = calcularPorcentajes(pregunta.resumen);
+                    dataGrafica = {
+                      labels: Object.keys(resumenPorcentaje),
+                      datasets: [
+                        {
+                          label: '% de respuestas',
+                          data: Object.values(resumenPorcentaje),
+                          backgroundColor: coloresGrafica.slice(
+                            0,
+                            Object.keys(resumenPorcentaje).length
+                          ),
+                          borderWidth: 1,
+                        },
+                      ],
+                    };
+                  }
+
+                  return (
+                    <div key={pregunta._id} className="mb-6">
+                      <h3 className="font-semibold mb-1">{pregunta.texto}</h3>
+                      <p className="mb-2 text-sm text-gray-300">
+                        Tipo: {pregunta.tipo}
+                      </p>
+                      {dataGrafica ? (
+                        <>
+                          <Doughnut data={dataGrafica} />
+                          <div className="mt-2">
+                            {Object.entries(resumenPorcentaje).map(([opcion, porcentaje]) => (
+                              <p key={opcion} className="text-sm text-gray-300">
+                                {opcion}: {porcentaje}%
+                              </p>
+                            ))}
+                          </div>
+                        </>
+                      ) : (
+                        <p className="text-sm text-gray-400 italic">
+                          Pregunta abierta, sin gráfico
+                        </p>
+                      )}
+                    </div>
+                  );
+                })
+              ) : (
+                <p>No hay preguntas</p>
+              )}
             </div>
-            <div className="flex gap-2">
+
+            <div className="mt-4 flex justify-end gap-3">
               <button
-                onClick={() => editarEncuesta(encuesta._id)}
-                className="px-2 py-1 bg-yellow-400 text-black rounded text-sm"
+                className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold"
+                onClick={() => navigate(`/admin/editar/${encuesta._id}`)} // Aquí corregido
               >
                 Editar
               </button>
               <button
-                onClick={() => eliminarEncuesta(encuesta._id)}
-                className="px-2 py-1 bg-red-500 text-white rounded text-sm"
+                className="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded-lg font-semibold"
+                onClick={() => cerrarMutation.mutate(encuesta._id)}
+                disabled={encuesta.cerrada}
+                title={encuesta.cerrada ? 'Encuesta ya está cerrada' : 'Cerrar encuesta'}
+              >
+                Cerrar
+              </button>
+              <button
+                className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-semibold"
+                onClick={() => {
+                  if (
+                    window.confirm('¿Estás seguro de eliminar esta encuesta? Esta acción no se puede deshacer.')
+                  ) {
+                    eliminarMutation.mutate(encuesta._id);
+                  }
+                }}
               >
                 Eliminar
               </button>
-              {!encuesta.cerrada && (
-                <button
-                  onClick={() => cerrarEncuesta(encuesta._id)}
-                  className="px-2 py-1 bg-gray-700 text-white rounded text-sm"
-                >
-                  Cerrar
-                </button>
-              )}
             </div>
           </div>
-
-          <button
-            onClick={() => cargarResultados(encuesta._id)}
-            className="mt-3 mb-4 px-3 py-1 bg-green-600 text-white rounded"
-          >
-            Ver resultados
-          </button>
-
-          {resultados[encuesta._id]?.map((pregunta, i) => (
-            <div key={i} className="mb-6">
-              <h3 className="font-semibold">{pregunta.texto}</h3>
-              {['Cerrada', 'Opción múltiple'].includes(pregunta.tipo) ? (
-                pregunta.respuestas.length > 0 ? (
-                  <Bar
-                    data={{
-                      labels: Object.keys(contarOpciones(pregunta.respuestas, pregunta.opciones)),
-                      datasets: [{
-                        label: 'Respuestas',
-                        data: Object.values(contarOpciones(pregunta.respuestas, pregunta.opciones)),
-                        backgroundColor: ['#60a5fa', '#34d399', '#f472b6', '#facc15', '#f87171'],
-                      }]
-                    }}
-                    options={{ responsive: true }}
-                  />
-                ) : (
-                  <p className="text-sm italic text-gray-500">Aún no hay respuestas.</p>
-                )
-              ) : (
-                <ul className="mt-2 list-disc list-inside">
-                  {pregunta.respuestas.map((r, idx) => (
-                    <li key={idx}>{r.respuesta}</li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ))}
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 };
