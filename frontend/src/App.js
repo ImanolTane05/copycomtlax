@@ -8,6 +8,7 @@ import DashboardAdmin from './pages/DashboardAdmin';
 import Encuestas from './pages/Encuestas';
 import AdminEncuestas from './pages/AdminEncuestas';
 import CrearEncuesta from './pages/CrearEncuesta';
+import EditarEncuesta from './pages/EditarEncuesta'; // <--- Importar el componente de edición
 import Navbar from './components/Navbar';
 
 // Rutas protegidas
@@ -46,6 +47,13 @@ const AppWrapper = () => {
         <Route path="/admin/crear-encuesta" element={
           <ProtectedRoute>
             <CrearEncuesta />
+          </ProtectedRoute>
+        } />
+
+        
+        <Route path="/admin/editar/:id" element={
+          <ProtectedRoute>
+            <EditarEncuesta />
           </ProtectedRoute>
         } />
 
