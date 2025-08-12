@@ -26,6 +26,7 @@ const AppWrapper = () => {
       <Routes>
         <Route path="/" element={<Visitor />} />
         <Route path="/encuestas" element={<Encuestas />} />
+        <Route path="/contacto" element={<Contact />} />
 
         {}
         <Route path="/contact" element={<Contact />} />

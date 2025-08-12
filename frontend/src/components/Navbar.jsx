@@ -24,7 +24,7 @@ const Navbar = () => {
 
        
         <button
-          onClick={() => navigate('/contact')} 
+          onClick={() => navigate('/contacto')} 
           className="hover:bg-gray-700 px-3 py-1 rounded"
         >
           Contacto
