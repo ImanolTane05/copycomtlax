@@ -12,6 +12,7 @@ const mongoose=require('mongoose');
 */
 
 const NoticiaSchema=new mongoose.Schema({
+    id:{type:mongoose.Schema.Types.ObjectId},
     title:{type:String,required:true},
     authors:{type:[mongoose.Schema.Types.ObjectId],required:true,ref:'User'},
     lead:{type:mongoose.Schema.Types.String},

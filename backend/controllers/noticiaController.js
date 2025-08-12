@@ -4,6 +4,7 @@ const Noticia=require('../models/Noticia');
 exports.crearNoticia=async(req,res) => {
     try {
         const noticia=new Noticia({
+            id:req.body.id,
             title:req.body.title,
             authors:req.body.authors,
             lead:req.body.lead,
@@ -22,7 +23,7 @@ exports.crearNoticia=async(req,res) => {
 // Consultar noticias (excluyendo el cuerpo)
 exports.obtenerNoticias=async(req,res)=>{
     try {
-        const noticias=await Noticia.find().sort({publishedDate:-1});
+        const noticias=await Noticia.find().select('id title authors lead headerPic publishedDate').sort({publishedDate:-1});
         for (var i=0;i<noticias.length;i++) {
             noticias[i].delete('body');
         }
@@ -45,7 +46,7 @@ exports.obtenerNoticia=async(req,res)=>{
 }
 
 // Editar noticias TODO
-exports.actualizarNoticias=async(req,res)=>{
+exports.actualizarNoticia=async(req,res)=>{
     try {
 
     } catch (e) {
@@ -55,7 +56,7 @@ exports.actualizarNoticias=async(req,res)=>{
 }
 
 // Eliminar noticias TODO
-exports.eliminarNoticias=async(req,res)=>{
+exports.eliminarNoticia=async(req,res)=>{
     try {
 
     } catch (e) {
