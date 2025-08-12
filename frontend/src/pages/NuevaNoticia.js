@@ -1,8 +1,19 @@
-import React from "react";
+import { createRef,useEffect, useState } from "react";
 import RichTextEditor from "../components/RichTextEditor/RichTextEditor";
 import "../App.css";
 
 const NuevaNoticia=()=> {
+    const [title,setTitle]=useState('');
+    const [intro,setIntro]=useState('');
+    const [heading,setHeading]=useState();
+    const [editorContent,setEditorContent]=useState(null);
+
+    const handleEditorStateChange=(editorState) => {
+        const serializedState=editorState.toJSON();
+        setEditorContent(serializedState);
+        console.log("Editor state in parent:",serializedState);
+    };
+
     return (
         <div className="grid-cols-subgrid m-5">
             <h1 className="text-center text-2xl font-semibold">
@@ -10,17 +21,51 @@ const NuevaNoticia=()=> {
             </h1>
             <form className="space-y-5">
                 <label>Título</label>
-                <div className="pb-2"><input type="text" className="w-[100%] border-[1px] p-1 border-black rounded-lg"></input></div>
+                <div className="pb-2">
+                    <input 
+                        value={title}
+                        onChange={(e)=>setTitle(e.target.value)}
+                        type="text" 
+                        className="w-[100%] border-[1px] p-1 border-black rounded-lg"
+                    />
+                </div>
                 <label>Introducción</label>
-                <div className="pb-2"><textarea className="w-[100%] border-[1px] border-black p-1 rounded-lg"></textarea></div>
+                <div className="pb-2">
+                    <textarea 
+                        value={intro}
+                        onChange={(e)=>setIntro(e.target.value)}
+                        className="w-[100%] border-[1px] border-black p-1 rounded-lg"
+                    />
+                </div>
                 <label>Encabezado</label>
-                <div className="pb-2"><input type="file" accept="image/png, image/jpeg"></input></div>
+                <div className="pb-2">
+                    <input 
+                        type="file" 
+                        accept="image/png, image/jpeg" 
+                        onChange={(e)=>setHeading(e.target.files[0])}
+                    />
+                </div>
+                {heading && <img src={URL.createObjectURL(heading)} className="inline-block h-[200px]" />}
                 <label>Contenido</label>
                 <div className="editorWrapper">
-                    <RichTextEditor/>
+                    <RichTextEditor
+                        onEditorStateChange={handleEditorStateChange}
+                    />
                 </div>
-                <input type="text" hidden={true}></input>
-                <button className="bg-blue-900 hover:bg-blue-800 transition-transform text-white p-2 rounded-lg">Subir</button>
+                <button 
+                    className="bg-blue-900 hover:bg-blue-800 transition-transform text-white p-2 rounded-lg"
+                    onClick={(e)=>{
+                        e.preventDefault();
+                        console.log({
+                            'titulo':title,
+                            'introduccion':intro,
+                            'encabezado':heading,
+                            'contenido':JSON.stringify(editorContent)
+                        })
+                    }}
+                >
+                        Subir
+                </button>
             </form>
         </div>
     )

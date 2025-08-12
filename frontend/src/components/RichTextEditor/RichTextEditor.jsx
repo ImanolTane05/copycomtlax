@@ -67,7 +67,9 @@ function onError(error) {
     console.error(error);
 }
 
-export default function RichTextEditor() {
+export default function RichTextEditor({
+    onEditorStateChange
+}) {
     const isSmallWidthViewPort=useMediaQuery('(max-width:1025px)');
     const [floatingAnchorElem,setFloatingAnchorElem]=useState(null);
     const placeholder=<Placeholder>Introduce el contenido...</Placeholder>
@@ -82,7 +84,7 @@ export default function RichTextEditor() {
     };
 
     function handleOnChange(editorState) {
-        editorState.current=editorState;
+        editorStateRef.current=editorState;
     }
 
     const onRef=(_floatingAnchorElem) => {
@@ -110,7 +112,7 @@ export default function RichTextEditor() {
                         placeholder={placeholder}
                         ErrorBoundary={LexicalErrorBoundary}
                     />
-                    <OnChangePlugin onChange={handleOnChange}/>
+                    <OnChangePlugin onChange={onEditorStateChange}/>
                     <HistoryPlugin/>
                     <CustomAutoFocusPlugin/>
                     <ListPlugin/>

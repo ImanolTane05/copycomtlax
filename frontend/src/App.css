@@ -51,3 +51,9 @@
 .debug-treetype-button {
   margin-right: 12px;
 }
+
+label {
+  display:flex;
+  flex-wrap:wrap;
+  wrap:10px;
+}
