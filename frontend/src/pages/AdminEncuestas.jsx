@@ -9,7 +9,7 @@ import {
     Legend
 } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
-import { FaEdit, FaTrashAlt, FaLock, FaUnlock, FaTimes } from 'react-icons/fa';
+import { FaEdit, FaTrashAlt, FaLock, FaUnlock, FaTimes, FaRobot } from 'react-icons/fa';
 import toast, { Toaster } from 'react-hot-toast';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -34,6 +34,8 @@ const AdminEncuestas = () => {
     const queryClient = useQueryClient();
     const navigate = useNavigate();
     const [expandedCard, setExpandedCard] = useState(null);
+    const [resumenGemini, setResumenGemini] = useState({});
+    const [loadingGemini, setLoadingGemini] = useState({});
 
     const fetchEncuestas = async () => {
         const token = localStorage.getItem('token');
@@ -104,6 +106,22 @@ const AdminEncuestas = () => {
         ), { duration: 5000, position: 'top-center' });
     };
 
+    const fetchGeminiSummary = async (encuestaId, preguntaId) => {
+        setLoadingGemini(prev => ({ ...prev, [preguntaId]: true }));
+        try {
+            const token = localStorage.getItem('token');
+            const res = await axios.get(`http://localhost:5000/api/encuestas/${encuestaId}/pregunta/${preguntaId}/resumen`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setResumenGemini(prev => ({ ...prev, [preguntaId]: res.data }));
+        } catch (error) {
+            console.error("Error al obtener el resumen de Gemini:", error);
+            toast.error("Error al obtener el resumen de la IA.");
+        } finally {
+            setLoadingGemini(prev => ({ ...prev, [preguntaId]: false }));
+        }
+    };
+
     if (isLoading)
         return (
             <div className="flex items-center justify-center min-h-screen bg-white">
@@ -159,6 +177,11 @@ const AdminEncuestas = () => {
                     <span className={`font-semibold ${encuesta.cerrada ? 'text-red-500' : 'text-green-500'}`}>
                         {encuesta.cerrada ? 'Cerrada' : 'Activa'}
                     </span>
+                    {encuesta.fechaCierre && !encuesta.cerrada && (
+                        <span className="ml-2 text-yellow-600">
+                            (Cierre programado: {new Date(encuesta.fechaCierre).toLocaleString()})
+                        </span>
+                    )}
                 </p>
                 <p className="text-xl font-semibold mt-2">Votos totales: {encuesta.totalVotos}</p>
 
@@ -181,24 +204,44 @@ const AdminEncuestas = () => {
                                         }],
                                     };
                                 }
+                                const currentSummary = resumenGemini[pregunta._id];
                                 return (
                                     <div key={pregunta._id || index} className="bg-white p-4 rounded-xl shadow-md space-y-3">
                                         <h3 className="font-semibold text-xl text-gray-700">{pregunta.texto}</h3>
                                         <p className="text-sm text-gray-400">Tipo: {pregunta.tipo}</p>
                                         {pregunta.tipo === 'Abierta' ? (
                                             <div className="mt-4">
-                                                <h4 className="font-semibold text-lg mb-2">Respuestas:</h4>
-                                                <ul className="list-disc pl-5 space-y-2 text-gray-600 max-h-48 overflow-y-auto">
-                                                    {pregunta.resumen && pregunta.resumen.length > 0 ? (
-                                                        pregunta.resumen.map((respuesta, i) => (
-                                                            <li key={i} className="break-words">
-                                                                {respuesta}
-                                                            </li>
-                                                        ))
-                                                    ) : (
-                                                        <p className="italic text-gray-500">Aún no hay respuestas para esta pregunta.</p>
-                                                    )}
-                                                </ul>
+                                                <h4 className="font-semibold text-lg mb-2">Resumen con IA:</h4>
+                                                {currentSummary ? (
+                                                    <div className="bg-gray-50 p-4 rounded-lg shadow-inner">
+                                                        <p className="text-gray-700 font-semibold mb-2">{currentSummary.resumen_general}</p>
+                                                        <p className="text-sm">Sentimiento: 
+                                                            <span className={`font-bold ml-1 ${
+                                                                currentSummary.sentimiento_general === 'Positivo' ? 'text-green-600' :
+                                                                currentSummary.sentimiento_general === 'Negativo' ? 'text-red-600' : 'text-yellow-600'
+                                                            }`}>
+                                                                {currentSummary.sentimiento_general}
+                                                            </span>
+                                                        </p>
+                                                        <ul className="list-disc pl-5 mt-2 text-gray-600 text-sm">
+                                                            {currentSummary.puntos_clave.map((punto, i) => (
+                                                                <li key={i}>{punto}</li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                ) : (
+                                                    <p className="italic text-gray-500">{loadingGemini[pregunta._id] ? 'Generando resumen con IA...' : 'No se ha generado un resumen aún.'}</p>
+                                                )}
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        fetchGeminiSummary(encuesta._id, pregunta._id);
+                                                    }}
+                                                    className="mt-4 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition"
+                                                    disabled={loadingGemini[pregunta._id]}
+                                                >
+                                                    <FaRobot /> {loadingGemini[pregunta._id] ? 'Generando...' : 'Generar Resumen con IA'}
+                                                </button>
                                             </div>
                                         ) : (
                                             dataGrafica ? (
