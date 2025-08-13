@@ -3,83 +3,24 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast, { Toaster } from 'react-hot-toast';
+import {
+  FaEdit,
+  FaTrash,
+  FaSave,
+  FaPlus,
+  FaTimes,
+  FaLock,
+  FaUnlock,
+  FaSpinner,
+  FaChevronDown,
+  FaChevronUp,
+} from 'react-icons/fa';
 
-// Icono para editar (SVG)
-const EditIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    className="h-5 w-5"
-    viewBox="0 0 20 20"
-    fill="currentColor"
-  >
-    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-  </svg>
-);
-
-// Icono para eliminar (SVG)
-const DeleteIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    className="h-5 w-5"
-    viewBox="0 0 20 20"
-    fill="currentColor"
-  >
-    <path
-      fillRule="evenodd"
-      d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.728-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-      clipRule="evenodd"
-    />
-  </svg>
-);
-
-// Icono para guardar (SVG)
-const SaveIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    className="h-6 w-6"
-    viewBox="0 0 20 20"
-    fill="currentColor"
-  >
-    <path
-      fillRule="evenodd"
-      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-      clipRule="evenodd"
-    />
-  </svg>
-);
-
-// Icono para cerrar (SVG)
-const CloseIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    className="h-5 w-5"
-    viewBox="0 0 20 20"
-    fill="currentColor"
-  >
-    <path
-      fillRule="evenodd"
-      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-      clipRule="evenodd"
-    />
-  </svg>
-);
-
-// Icono para agregar (SVG)
-const AddIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    className="h-5 w-5"
-    viewBox="0 0 20 20"
-    fill="currentColor"
-  >
-    <path
-      fillRule="evenodd"
-      d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-      clipRule="evenodd"
-    />
-  </svg>
-);
-
+/**
+ * Componente principal para editar una encuesta existente.
+ * Muestra el título y las preguntas de la encuesta, y permite modificar, agregar o eliminar preguntas.
+ * También permite cerrar y reabrir la encuesta.
+ */
 const EditarEncuesta = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -98,7 +39,12 @@ const EditarEncuesta = () => {
   const tipos = ['Abierta', 'Cerrada', 'Opción múltiple'];
 
   // Query para obtener los datos de la encuesta
-  const { data: encuesta, isLoading, isError, error } = useQuery({
+  const {
+    data: encuesta,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ['encuesta', id],
     queryFn: async () => {
       const token = localStorage.getItem('token');
@@ -141,7 +87,7 @@ const EditarEncuesta = () => {
       toast.error('Error al actualizar la encuesta');
     },
   });
-  
+
   // Mutación para cerrar la encuesta
   const closeMutation = useMutation({
     mutationFn: async () => {
@@ -188,15 +134,23 @@ const EditarEncuesta = () => {
     },
   });
 
+  /**
+   * Abre el popup de edición y carga la pregunta seleccionada en el formulario.
+   * @param {number} index El índice de la pregunta a editar.
+   */
   const handleEditarPregunta = (index) => {
     setEditandoIndex(index);
     setPreguntaForm(preguntas[index]);
     setMostrarPopup(true);
   };
 
+  /**
+   * Muestra un toast de confirmación para eliminar una pregunta.
+   * @param {number} index El índice de la pregunta a eliminar.
+   */
   const handleEliminarPregunta = (index) => {
     toast((t) => (
-      <div className="flex flex-col p-4 bg-gray-700 text-white rounded-xl shadow-lg">
+      <div className="flex flex-col p-4 bg-white text-gray-800 rounded-xl shadow-lg">
         <span>¿Estás seguro de eliminar esta pregunta?</span>
         <div className="flex gap-4 mt-4 justify-end">
           <button
@@ -208,20 +162,22 @@ const EditarEncuesta = () => {
               toast.dismiss(t.id);
             }}
           >
-            <DeleteIcon /> Sí, eliminar
+            <FaTrash /> Sí, eliminar
           </button>
           <button
             className="bg-gray-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-600 transition flex items-center gap-2"
             onClick={() => toast.dismiss(t.id)}
           >
-            <CloseIcon /> Cancelar
+            <FaTimes /> Cancelar
           </button>
         </div>
       </div>
-    ),
-    { duration: 5000 });
+    ), { duration: 5000 });
   };
 
+  /**
+   * Guarda una nueva pregunta o actualiza una existente en el estado local.
+   */
   const handleGuardarPregunta = () => {
     if (!preguntaForm.tipo || !preguntaForm.texto.trim()) {
       toast.error('Debe seleccionar el tipo y escribir el texto de la pregunta');
@@ -260,6 +216,10 @@ const EditarEncuesta = () => {
     setPreguntaForm({ tipo: '', texto: '', opciones: [''] });
   };
 
+  /**
+   * Maneja el envío del formulario para actualizar la encuesta en la base de datos.
+   * @param {Event} e El evento del formulario.
+   */
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!titulo.trim()) {
@@ -268,36 +228,38 @@ const EditarEncuesta = () => {
     }
     updateMutation.mutate({ titulo, preguntas });
   };
-  
+
+  /**
+   * Muestra un toast de confirmación para cerrar o abrir la encuesta.
+   */
   const handleCerrarAbrirEncuesta = () => {
     const isClosed = encuesta?.estaCerrada;
     if (isClosed) {
       toast((t) => (
-        <div className="flex flex-col p-4 bg-gray-700 text-white rounded-xl shadow-lg">
+        <div className="flex flex-col p-4 bg-white text-gray-800 rounded-xl shadow-lg">
           <span>¿Estás seguro de que quieres abrir esta encuesta?</span>
           <div className="flex gap-4 mt-4 justify-end">
             <button
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition flex items-center gap-2"
+              className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition flex items-center gap-2"
               onClick={() => {
                 openMutation.mutate();
                 toast.dismiss(t.id);
               }}
             >
-              <SaveIcon /> Sí, abrir
+              <FaUnlock /> Sí, abrir
             </button>
             <button
               className="bg-gray-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-600 transition flex items-center gap-2"
               onClick={() => toast.dismiss(t.id)}
             >
-              <CloseIcon /> Cancelar
+              <FaTimes /> Cancelar
             </button>
           </div>
         </div>
-      ),
-      { duration: 5000 });
+      ), { duration: 5000 });
     } else {
       toast((t) => (
-        <div className="flex flex-col p-4 bg-gray-700 text-white rounded-xl shadow-lg">
+        <div className="flex flex-col p-4 bg-white text-gray-800 rounded-xl shadow-lg">
           <span>¿Estás seguro de que quieres cerrar esta encuesta? No se podrán recibir más respuestas.</span>
           <div className="flex gap-4 mt-4 justify-end">
             <button
@@ -307,63 +269,61 @@ const EditarEncuesta = () => {
                 toast.dismiss(t.id);
               }}
             >
-              <CloseIcon /> Sí, cerrar
+              <FaLock /> Sí, cerrar
             </button>
             <button
               className="bg-gray-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-600 transition flex items-center gap-2"
               onClick={() => toast.dismiss(t.id)}
             >
-              <CloseIcon /> Cancelar
+              <FaTimes /> Cancelar
             </button>
           </div>
         </div>
-      ),
-      { duration: 5000 });
+      ), { duration: 5000 });
     }
   };
 
 
   if (isLoading)
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#1f2937]">
-        <p className="text-white text-xl animate-pulse">Cargando encuesta...</p>
+      <div className="flex items-center justify-center min-h-screen bg-white text-gray-800">
+        <p className="text-xl animate-pulse">Cargando encuesta...</p>
       </div>
     );
   if (isError)
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#1f2937]">
-        <p className="text-red-400 text-xl text-center">
+      <div className="flex items-center justify-center min-h-screen bg-white text-gray-800">
+        <p className="text-red-600 text-xl text-center">
           Error al cargar la encuesta: {error.message}
         </p>
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-[#1f2937] p-4 sm:p-6 text-white flex justify-center">
+    <div className="min-h-screen bg-white p-4 sm:p-6 text-gray-800 flex justify-center font-sans antialiased">
       <Toaster />
-      <div className="max-w-4xl w-full bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-xl space-y-6">
-        <h1 className="text-3xl sm:text-4xl font-extrabold mb-6 text-center text-white">
-          Editar Encuesta
-        </h1>
-        
-        {/* Botón para cerrar/abrir la encuesta */}
-        <div className="flex justify-end">
+      <div className="max-w-4xl w-full space-y-6">
+        {/* Cabecera con título y botón de cerrar/abrir */}
+        <div className="bg-gray-100 p-6 sm:p-8 rounded-2xl shadow-xl flex flex-col sm:flex-row justify-between items-center gap-4 border border-gray-200">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 text-center sm:text-left">
+            Editar Encuesta
+          </h1>
           <button
             onClick={handleCerrarAbrirEncuesta}
             className={`px-6 py-3 rounded-xl font-semibold transition flex items-center justify-center gap-2 ${
               encuesta?.estaCerrada
-                ? 'bg-green-600 hover:bg-green-700'
-                : 'bg-red-600 hover:bg-red-700'
+                ? 'bg-green-600 hover:bg-green-700 text-white'
+                : 'bg-red-600 hover:bg-red-700 text-white'
             }`}
           >
             {encuesta?.estaCerrada ? (
               <>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-8V8a1 1 0 012 0v2h2a1 1 0 010 2h-2v2a1 1 0 01-2 0v-2H7a1 1 0 010-2h2z" clipRule="evenodd" /></svg>
+                <FaUnlock className="h-5 w-5" />
                 Abrir Encuesta
               </>
             ) : (
               <>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-8V8a1 1 0 012 0v2h2a1 1 0 010 2h-2v2a1 1 0 01-2 0v-2H7a1 1 0 010-2h2z" clipRule="evenodd" /></svg>
+                <FaLock className="h-5 w-5" />
                 Cerrar Encuesta
               </>
             )}
@@ -371,8 +331,9 @@ const EditarEncuesta = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="bg-gray-700 p-5 rounded-xl shadow-md">
-            <label htmlFor="titulo" className="block text-lg font-bold mb-2">
+          {/* Tarjeta para el título de la encuesta */}
+          <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-xl border border-gray-200">
+            <label htmlFor="titulo" className="block text-lg font-bold mb-2 text-blue-600">
               Título de la Encuesta
             </label>
             <input
@@ -380,15 +341,16 @@ const EditarEncuesta = () => {
               type="text"
               value={titulo}
               onChange={(e) => setTitulo(e.target.value)}
-              className="w-full border border-gray-600 bg-gray-900 p-4 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full border border-gray-300 bg-gray-50 p-4 rounded-xl text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
               placeholder="Escribe el título de la encuesta"
               required
             />
           </div>
 
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
-              <h2 className="text-2xl font-bold">Preguntas</h2>
+          {/* Tarjeta para la sección de preguntas */}
+          <div className="bg-gray-100 p-6 sm:p-8 rounded-2xl shadow-xl space-y-6 border border-gray-200">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+              <h2 className="text-2xl font-bold text-gray-900">Preguntas</h2>
               <button
                 type="button"
                 onClick={() => {
@@ -398,7 +360,7 @@ const EditarEncuesta = () => {
                 }}
                 className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition flex items-center justify-center gap-2"
               >
-                <AddIcon />
+                <FaPlus className="h-5 w-5" />
                 Agregar pregunta
               </button>
             </div>
@@ -408,15 +370,15 @@ const EditarEncuesta = () => {
                 preguntas.map((pregunta, index) => (
                   <div
                     key={pregunta._id || index}
-                    className="bg-gray-700 p-5 rounded-xl shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+                    className="bg-white p-5 rounded-xl shadow-sm border border-gray-300 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
                   >
                     <div className="flex-grow">
-                      <strong className="block mb-1 text-lg font-bold text-blue-400">
+                      <strong className="block mb-1 text-lg font-bold text-blue-600">
                         {pregunta.tipo}:
                       </strong>
-                      <p className="text-gray-200 text-base mb-2">{pregunta.texto}</p>
+                      <p className="text-gray-800 text-base mb-2">{pregunta.texto}</p>
                       {pregunta.opciones?.length > 0 && (
-                        <ul className="list-disc list-inside text-gray-300 ml-4 space-y-1">
+                        <ul className="list-disc list-inside text-gray-600 ml-4 space-y-1">
                           {pregunta.opciones.map((op, j) => (
                             <li key={j}>{op}</li>
                           ))}
@@ -427,24 +389,24 @@ const EditarEncuesta = () => {
                       <button
                         type="button"
                         onClick={() => handleEditarPregunta(index)}
-                        className="text-yellow-400 hover:text-yellow-500 transition p-2 rounded-full hover:bg-gray-600"
+                        className="text-yellow-600 hover:text-yellow-700 transition p-2 rounded-full hover:bg-gray-200"
                         title="Editar pregunta"
                       >
-                        <EditIcon />
+                        <FaEdit className="h-5 w-5" />
                       </button>
                       <button
                         type="button"
                         onClick={() => handleEliminarPregunta(index)}
-                        className="text-red-400 hover:text-red-500 transition p-2 rounded-full hover:bg-gray-600"
+                        className="text-red-600 hover:text-red-700 transition p-2 rounded-full hover:bg-gray-200"
                         title="Eliminar pregunta"
                       >
-                        <DeleteIcon />
+                        <FaTrash className="h-5 w-5" />
                       </button>
                     </div>
                   </div>
                 ))
               ) : (
-                <p className="text-center text-gray-400 text-lg p-8 rounded-xl bg-gray-700">
+                <p className="text-center text-gray-500 text-lg p-8 rounded-xl bg-gray-200">
                   Aún no hay preguntas añadidas.
                 </p>
               )}
@@ -453,27 +415,28 @@ const EditarEncuesta = () => {
 
           <button
             type="submit"
-            className="w-full bg-green-600 text-white px-6 py-4 rounded-xl hover:bg-green-700 transition font-bold text-lg flex items-center justify-center gap-2"
+            className="w-full bg-blue-600 text-white px-6 py-4 rounded-xl hover:bg-blue-700 transition font-bold text-lg flex items-center justify-center gap-2"
             disabled={updateMutation.isPending}
           >
             {updateMutation.isPending ? (
               <>
-                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <FaSpinner className="animate-spin h-5 w-5 text-white" />
                 Guardando...
               </>
             ) : (
               <>
-                <SaveIcon />
+                <FaSave className="h-5 w-5" />
                 Guardar Cambios
               </>
             )}
           </button>
         </form>
 
+        {/* Popup para agregar/editar pregunta */}
         {mostrarPopup && (
-          <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4">
-            <div className="bg-gray-800 p-8 rounded-2xl shadow-2xl max-w-lg w-full text-white space-y-6">
-              <h3 className="text-2xl sm:text-3xl font-semibold text-center text-blue-400">
+          <div className="fixed inset-0 bg-gray-900 bg-opacity-70 flex justify-center items-center z-50 p-4">
+            <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-lg w-full text-gray-800 space-y-6">
+              <h3 className="text-2xl sm:text-3xl font-semibold text-center text-blue-600">
                 {editandoIndex !== null ? 'Editar Pregunta' : 'Nueva Pregunta'}
               </h3>
               <div className="space-y-4">
@@ -488,7 +451,7 @@ const EditarEncuesta = () => {
                         opciones: e.target.value === 'Abierta' ? [] : [''],
                       })
                     }
-                    className="w-full p-3 border border-gray-600 rounded-lg bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    className="w-full p-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-600"
                   >
                     <option value="">Seleccione un tipo de pregunta</option>
                     {tipos.map((tipo) => (
@@ -506,7 +469,7 @@ const EditarEncuesta = () => {
                     onChange={(e) =>
                       setPreguntaForm({ ...preguntaForm, texto: e.target.value })
                     }
-                    className="w-full p-3 border border-gray-600 rounded-lg bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    className="w-full p-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-600"
                     placeholder="Escribe la pregunta..."
                   />
                 </div>
@@ -523,7 +486,7 @@ const EditarEncuesta = () => {
                             opciones[i] = e.target.value;
                             setPreguntaForm({ ...preguntaForm, opciones });
                           }}
-                          className="w-full p-3 border border-gray-600 rounded-lg bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+                          className="w-full p-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-600"
                           placeholder={`Opción ${i + 1}`}
                         />
                         {preguntaForm.opciones.length > 1 && (
@@ -537,10 +500,10 @@ const EditarEncuesta = () => {
                                 ),
                               })
                             }
-                            className="text-red-400 hover:text-red-500 transition p-2"
+                            className="text-red-600 hover:text-red-700 transition p-2 rounded-full hover:bg-gray-200"
                             title="Eliminar opción"
                           >
-                            <CloseIcon />
+                            <FaTimes className="h-5 w-5" />
                           </button>
                         )}
                       </div>
@@ -552,10 +515,10 @@ const EditarEncuesta = () => {
                           opciones: [...preguntaForm.opciones, ''],
                         })
                       }
-                      className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm flex items-center justify-center gap-2 mt-4"
+                      className="w-full px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition text-sm flex items-center justify-center gap-2 mt-4"
                       type="button"
                     >
-                      <AddIcon />
+                      <FaPlus className="h-4 w-4" />
                       Agregar opción
                     </button>
                   </div>
@@ -564,10 +527,10 @@ const EditarEncuesta = () => {
               <div className="mt-8 flex flex-col sm:flex-row gap-4">
                 <button
                   onClick={handleGuardarPregunta}
-                  className="w-full bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2"
+                  className="w-full bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition flex items-center justify-center gap-2"
                   type="button"
                 >
-                  <SaveIcon />
+                  <FaSave className="h-5 w-5" />
                   {editandoIndex !== null ? 'Guardar Cambios' : 'Guardar Pregunta'}
                 </button>
                 <button
@@ -576,10 +539,10 @@ const EditarEncuesta = () => {
                     setEditandoIndex(null);
                     setPreguntaForm({ tipo: '', texto: '', opciones: [''] });
                   }}
-                  className="w-full bg-gray-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-600 transition flex items-center justify-center gap-2"
+                  className="w-full bg-gray-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-600 transition flex items-center justify-center gap-2"
                   type="button"
                 >
-                  <CloseIcon />
+                  <FaTimes className="h-5 w-5" />
                   Cancelar
                 </button>
               </div>
