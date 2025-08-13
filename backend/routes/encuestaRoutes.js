@@ -2,14 +2,14 @@ const express = require('express');
 const router = express.Router();
 const { verifyToken, verifyAdmin } = require('../middleware/authMiddleware');
 const {
-    crearEncuesta,
-    obtenerEncuestasAdmin,
-    obtenerEncuestasPublicas,
-    obtenerEncuestaPorId,
-    actualizarEncuesta,
-    eliminarEncuesta,
-    cambiarEstadoEncuesta,
-    responderEncuesta,
+    crearEncuesta,
+    obtenerEncuestasAdmin,
+    obtenerEncuestasPublicas,
+    obtenerEncuestaPorId,
+    actualizarEncuesta,
+    eliminarEncuesta,
+    cambiarEstadoEncuesta,
+    responderEncuesta,
 } = require('../controllers/encuestaController');
 
 // Rutas públicas
@@ -22,6 +22,6 @@ router.get('/:id', verifyToken, verifyAdmin, obtenerEncuestaPorId);
 router.post('/', verifyToken, verifyAdmin, crearEncuesta);
 router.put('/:id', verifyToken, verifyAdmin, actualizarEncuesta);
 router.delete('/:id', verifyToken, verifyAdmin, eliminarEncuesta);
-router.put('/:id/estado', verifyToken, verifyAdmin, cambiarEstadoEncuesta);
+router.patch('/:id/estado', verifyToken, verifyAdmin, cambiarEstadoEncuesta); // <--- LÍNEA CORREGIDA
 
 module.exports = router;
