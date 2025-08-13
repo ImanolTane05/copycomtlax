@@ -5,7 +5,7 @@ const crearEncuesta = async (req, res) => {
     try {
         const nuevaEncuesta = new Encuesta({
             ...req.body,
-            cerrada: false, 
+            cerrada: false,
             creadaPor: req.user.id,
             fechaPublicacion: new Date(),
         });
@@ -21,14 +21,35 @@ const obtenerEncuestasAdmin = async (req, res) => {
         const encuestas = await Encuesta.find();
         const encuestasConResumen = await Promise.all(
             encuestas.map(async (encuesta) => {
+                const totalVotos = await Respuesta.countDocuments({ encuestaId: encuesta._id });
+
                 const preguntasConResumen = await Promise.all(
                     encuesta.preguntas.map(async (pregunta) => {
                         if (pregunta.tipo === 'Abierta') {
+                            const respuestasAbiertas = await Respuesta.find(
+                                { encuestaId: encuesta._id, preguntaId: pregunta._id },
+                                'respuesta'
+                            );
+                            const respuestasTexto = respuestasAbiertas.map(r => r.respuesta);
                             return {
                                 ...pregunta.toObject(),
-                                resumen: {},
+                                resumen: respuestasTexto,
                             };
-                        } else {
+                        } else if (pregunta.tipo === 'Opción múltiple') {
+                            const respuestas = await Respuesta.aggregate([
+                                { $match: { encuestaId: encuesta._id, preguntaId: pregunta._id } },
+                                { $unwind: '$respuesta' },
+                                { $group: { _id: '$respuesta', count: { $sum: 1 } } },
+                            ]);
+                            const resumen = {};
+                            respuestas.forEach((r) => {
+                                resumen[r._id] = r.count;
+                            });
+                            return {
+                                ...pregunta.toObject(),
+                                resumen,
+                            };
+                        } else { // Asumimos que es 'Cerrada'
                             const respuestas = await Respuesta.aggregate([
                                 { $match: { encuestaId: encuesta._id, preguntaId: pregunta._id } },
                                 { $group: { _id: '$respuesta', count: { $sum: 1 } } },
@@ -47,6 +68,7 @@ const obtenerEncuestasAdmin = async (req, res) => {
                 return {
                     ...encuesta.toObject(),
                     preguntas: preguntasConResumen,
+                    totalVotos: totalVotos
                 };
             })
         );
@@ -68,7 +90,10 @@ const obtenerEncuestasPublicas = async (req, res) => {
 
 const obtenerEncuestaPorId = async (req, res) => {
     try {
-        const encuesta = await Encuesta.findById(req.params.id);
+        const encuesta = await Encuesta.findById(req.params.id)
+            .populate('preguntas')
+            .exec();
+
         if (!encuesta) {
             return res.status(404).json({ error: "Encuesta no encontrada" });
         }

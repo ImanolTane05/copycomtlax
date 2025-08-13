@@ -9,19 +9,17 @@ import {
     Legend
 } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
-import { FaEdit, FaTrashAlt, FaLock, FaUnlock, FaTimes } from 'react-icons/fa'; // Iconos de Font Awesome
+import { FaEdit, FaTrashAlt, FaLock, FaUnlock, FaTimes } from 'react-icons/fa';
 import toast, { Toaster } from 'react-hot-toast';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-// Paleta de colores para las gráficas, adaptada a la estética azul/gris
 const coloresGrafica = [
     '#2B6CB0', '#4FD1C5', '#90CDF4', '#3182CE', '#81E6D9', '#EBF4FF',
     '#38B2AC', '#48BB78', '#68D391', '#9AE6B4', '#D6F6DE',
     '#ECC94B', '#F6E05E', '#FAD961', '#FCD34D', '#FBBF24',
 ];
 
-// Función para calcular porcentajes de manera segura
 function calcularPorcentajes(resumen) {
     const total = Object.values(resumen).reduce((a, b) => a + b, 0);
     if (total === 0) return resumen;
@@ -140,7 +138,6 @@ const AdminEncuestas = () => {
                 onMouseLeave={() => setExpandedCard(null)}
                 onClick={() => !isExpanded && setExpandedCard(encuesta._id)}
             >
-                {/* Botón para cerrar la vista expandida, si está activa */}
                 {isExpanded && (
                     <button
                         className="absolute top-4 right-4 p-2 rounded-full bg-gray-300 text-gray-800 hover:bg-gray-400 z-50 transition"
@@ -163,15 +160,15 @@ const AdminEncuestas = () => {
                         {encuesta.cerrada ? 'Cerrada' : 'Activa'}
                     </span>
                 </p>
+                <p className="text-xl font-semibold mt-2">Votos totales: {encuesta.totalVotos}</p>
 
-                {/* El contenido de las preguntas se muestra solo cuando la tarjeta está expandida */}
                 {isExpanded && (
-                    <div className="flex-grow space-y-6 overflow-y-auto max-h-[80vh] pr-4">
+                    <div className="flex-grow space-y-6 overflow-y-auto max-h-[80vh] pr-4 mt-4">
                         {encuesta.preguntas.length > 0 ? (
                             encuesta.preguntas.map((pregunta, index) => {
                                 let dataGrafica = null;
                                 let resumenPorcentaje = null;
-                                if (['Cerrada', 'Opción múltiple'].includes(pregunta.tipo)) {
+                                if (pregunta.tipo !== 'Abierta') {
                                     resumenPorcentaje = calcularPorcentajes(pregunta.resumen || {});
                                     dataGrafica = {
                                         labels: Object.keys(resumenPorcentaje),
@@ -185,26 +182,43 @@ const AdminEncuestas = () => {
                                     };
                                 }
                                 return (
-                                    <div key={pregunta._id || index} className="bg-white p-4 rounded-xl shadow-md">
-                                        <h3 className="font-semibold text-xl mb-1 text-gray-700">{pregunta.texto}</h3>
-                                        <p className="mb-2 text-sm text-gray-400">Tipo: {pregunta.tipo}</p>
-                                        {dataGrafica ? (
-                                            <div className="flex flex-col md:flex-row items-center gap-4">
-                                                <div className="w-full md:w-1/2 p-2">
-                                                    <Doughnut data={dataGrafica} />
-                                                </div>
-                                                <div className="w-full md:w-1/2 mt-4 md:mt-0 text-sm">
-                                                    {Object.entries(resumenPorcentaje).map(([opcion, porcentaje], i) => (
-                                                        <div key={opcion} className="flex items-center mb-1">
-                                                            <span className="inline-block w-3 h-3 rounded-full mr-2"
-                                                                style={{ backgroundColor: coloresGrafica[i % coloresGrafica.length] }}></span>
-                                                            <span className="text-gray-700">{opcion}: {porcentaje}%</span>
-                                                        </div>
-                                                    ))}
-                                                </div>
+                                    <div key={pregunta._id || index} className="bg-white p-4 rounded-xl shadow-md space-y-3">
+                                        <h3 className="font-semibold text-xl text-gray-700">{pregunta.texto}</h3>
+                                        <p className="text-sm text-gray-400">Tipo: {pregunta.tipo}</p>
+                                        {pregunta.tipo === 'Abierta' ? (
+                                            <div className="mt-4">
+                                                <h4 className="font-semibold text-lg mb-2">Respuestas:</h4>
+                                                <ul className="list-disc pl-5 space-y-2 text-gray-600 max-h-48 overflow-y-auto">
+                                                    {pregunta.resumen && pregunta.resumen.length > 0 ? (
+                                                        pregunta.resumen.map((respuesta, i) => (
+                                                            <li key={i} className="break-words">
+                                                                {respuesta}
+                                                            </li>
+                                                        ))
+                                                    ) : (
+                                                        <p className="italic text-gray-500">Aún no hay respuestas para esta pregunta.</p>
+                                                    )}
+                                                </ul>
                                             </div>
                                         ) : (
-                                            <p className="text-sm text-gray-500 italic">Pregunta abierta, sin gráfico.</p>
+                                            dataGrafica ? (
+                                                <div className="flex flex-col md:flex-row items-center gap-4">
+                                                    <div className="w-full md:w-1/2 p-2 max-h-64 flex items-center justify-center">
+                                                        <Doughnut data={dataGrafica} />
+                                                    </div>
+                                                    <div className="w-full md:w-1/2 mt-4 md:mt-0 text-sm max-h-64 overflow-y-auto pr-2">
+                                                        {Object.entries(resumenPorcentaje).map(([opcion, porcentaje], i) => (
+                                                            <div key={opcion} className="flex items-center mb-1">
+                                                                <span className="inline-block w-3 h-3 rounded-full mr-2 shrink-0"
+                                                                    style={{ backgroundColor: coloresGrafica[i % coloresGrafica.length] }}></span>
+                                                                <span className="text-gray-700 break-words">{opcion}: {porcentaje}%</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <p className="text-sm text-gray-500 italic">No hay respuestas para esta pregunta.</p>
+                                            )
                                         )}
                                     </div>
                                 );
@@ -215,8 +229,6 @@ const AdminEncuestas = () => {
                     </div>
                 )}
 
-
-                {/* Los botones de acción ahora se renderizan siempre, sin la condicional de isExpanded */}
                 <div className="mt-6 flex justify-end gap-3 flex-wrap">
                     <button
                         className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition"
