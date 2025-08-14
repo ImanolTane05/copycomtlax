@@ -4,13 +4,12 @@ const Noticia=require('../models/Noticia');
 exports.crearNoticia=async(req,res) => {
     try {
         const noticia=new Noticia({
-            id:req.body.id,
             title:req.body.title,
-            authors:req.body.authors,
             lead:req.body.lead,
             headerPic:req.body.headerPic,
             body:req.body.body,
-            publishedDate:req.body.publishedDate
+            publishedDate:req.body.publishedDate,
+            editedDate:req.body.editedDate
         });
         await noticia.save();
         res.status(201).json(noticia);
@@ -37,7 +36,7 @@ exports.obtenerNoticias=async(req,res)=>{
 // Consultar detalles de noticia
 exports.obtenerNoticia=async(req,res)=>{
     try {
-        const noticia=await Noticia.findOne(req._id);
+        const noticia=await Noticia.findById(req.params.id);
         res.json(noticia);
     } catch (e) {
         console.error('Error al consultar Noticia: ',e);
@@ -48,7 +47,15 @@ exports.obtenerNoticia=async(req,res)=>{
 // Editar noticias TODO
 exports.actualizarNoticia=async(req,res)=>{
     try {
-
+        Noticia.findByIdAndUpdate(req.params.id,
+            {
+                title:req.body.title,
+                lead:req.body.lead,
+                headerPic:req.body.headerPic,
+                body:req.body.body,
+                editedDate:Date.now()
+            }
+        )
     } catch (e) {
         console.error('Error al consultar Noticia: ',e);
         res.status(500).json({mensaje:'Error al consultar noticias.'})
@@ -58,7 +65,7 @@ exports.actualizarNoticia=async(req,res)=>{
 // Eliminar noticias TODO
 exports.eliminarNoticia=async(req,res)=>{
     try {
-
+        Noticia.findByIdAndDelete(req.params.id);
     } catch (e) {
         console.error('Error al consultar Noticia: ',e);
         res.status(500).json({mensaje:'Error al consultar noticias.'})

@@ -2,7 +2,13 @@ import { createRef,useEffect, useState } from "react";
 import RichTextEditor from "../components/RichTextEditor/RichTextEditor";
 import "../App.css";
 
-const NuevaNoticia=()=> {
+const EditarNoticia=({
+    id,
+    old_title,
+    old_intro,
+    old_heading,
+    old_body
+})=> {
     const [title,setTitle]=useState('');
     const [intro,setIntro]=useState('');
     const [heading,setHeading]=useState();
@@ -75,4 +81,4 @@ const NuevaNoticia=()=> {
     )
 }
 
-export default NuevaNoticia;
+export default EditarNoticia;
