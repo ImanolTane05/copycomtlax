@@ -9,6 +9,7 @@ import Encuestas from './pages/Encuestas';
 import AdminEncuestas from './pages/AdminEncuestas';
 import Navbar from './components/Navbar';
 import NuevaNoticia from './pages/NuevaNoticia';
+import Noticia from './pages/Noticia';
 
 // Componente para proteger rutas admin
 const ProtectedRoute = ({ children }) => {
@@ -49,6 +50,7 @@ const AppWrapper = () => {
             <NuevaNoticia/>
           </ProtectedRoute>
         }/>
+        <Route path="/noticias/:id" element={<Noticia/>}/>
       </Routes>
     </>
   );

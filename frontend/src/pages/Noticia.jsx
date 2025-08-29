@@ -1,7 +1,9 @@
+import { useParams } from "react-router-dom";
 import ArticleCard from "../components/ArticleCard";
 
-const Noticia=({id})=> {
-    // TODO obtener detalles de noticia
+const Noticia=()=> {
+    const {id}=useParams();
+
     return (
         <div className="grid-cols-2">
             <span className="grid-cols-subgrid m-5">

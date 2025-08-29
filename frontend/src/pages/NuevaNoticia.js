@@ -1,4 +1,4 @@
-import { createRef,useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import RichTextEditor from "../components/RichTextEditor/RichTextEditor";
@@ -72,10 +72,7 @@ const NuevaNoticia=()=> {
             }
         }
     }
-
-    // TODO Función para subir datos, necesita:
-    // - CREAR MODELO DE DATOS Y RUTAS A API EN EL BACKEND
-    // - DESPUÉS COPIAR ESTA PÁGINA PARA EDITAR NOTICIA 
+    
     return (
         <div className="grid-cols-subgrid m-5">
             <h1 className="text-center text-2xl font-semibold">

@@ -22,10 +22,7 @@ exports.crearNoticia=async(req,res) => {
 // Consultar noticias (excluyendo el cuerpo)
 exports.obtenerNoticias=async(req,res)=>{
     try {
-        const noticias=await Noticia.find().select('id title authors lead headerPic publishedDate').sort({publishedDate:-1});
-        for (var i=0;i<noticias.length;i++) {
-            noticias[i].delete('body');
-        }
+        const noticias=await Noticia.find({}).select('-body').sort({publishedDate:-1});
         res.json(noticias);
     } catch (e) {
         console.error('Error al consultar Noticias: ',e);
