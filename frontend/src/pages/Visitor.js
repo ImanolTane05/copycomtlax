@@ -22,6 +22,7 @@ const Visitor = () => {
           {
             noticias.map((noticia)=>(
               <ArticleCard
+                  key={noticia._id}
                   id={noticia._id}
                   title={noticia.title}
                   lead={noticia.lead}

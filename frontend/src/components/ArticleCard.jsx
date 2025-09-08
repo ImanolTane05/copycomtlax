@@ -14,7 +14,7 @@ export default function ArticleCard({
     }
 
     return(
-        <div key={id} className="hover:scale-105 transition-transform border shadow-lg rounded-lg bg-slate-100 cursor-pointer"
+        <div key={id} id={id} className="hover:scale-105 transition-transform border shadow-lg rounded-lg bg-slate-100 cursor-pointer"
         onClick={handleClick}
         >
             <div className="overflow-hidden">

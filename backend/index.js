@@ -28,6 +28,9 @@ app.use('/api/encuestas', encuestaRoutes);
 const noticiaRoutes = require('./routes/noticiaRoutes');
 app.use('/api/noticias', noticiaRoutes);
 
+const uploadRoutes=require('./middleware/imgUploadMiddleware');
+app.use('/api/upload',uploadRoutes);
+
 // Conexión a MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✅ Conectado a MongoDB'))

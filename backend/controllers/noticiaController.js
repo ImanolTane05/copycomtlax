@@ -23,6 +23,18 @@ exports.crearNoticia=async(req,res) => {
 exports.obtenerNoticias=async(req,res)=>{
     try {
         const noticias=await Noticia.find({}).select('-body').sort({publishedDate:-1});
+        // ---Intento de partición de resultados para paginado
+        //const page=parseInt(req.query.page);
+        //const pageSize=parseInt(req.query.pageSize);
+        ////Calcular índices inicial y final p' la página solicitada
+        //const startIndex=(page-1)*pageSize;
+        //const endIndex=page*pageSize;
+        ////Slice al arreglo de noticias según índices
+        //const slicedNoticias=noticias.slice(startIndex,endIndex);
+        ////Calcular total de páginas
+        //const totalPages=Math.ceil(noticias.length/pageSize);
+        // SUSTITUIR RES.JSON CON res.json({noticias:noticias,paginas:totalPages});
+        // -----
         res.json(noticias);
     } catch (e) {
         console.error('Error al consultar Noticias: ',e);
