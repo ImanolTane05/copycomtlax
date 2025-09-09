@@ -74,9 +74,19 @@ exports.actualizarNoticia=async(req,res)=>{
 // Eliminar noticias TODO
 exports.eliminarNoticia=async(req,res)=>{
     try {
-        Noticia.findByIdAndDelete(req.params.id);
+        Noticia.findByIdAndDelete(req.params.id).then((data)=>{
+            if(!data) {
+                res.status(404).send({
+                    message:`404 No se encontró noticia a eliminar.`
+                });
+            } else {
+                res.send({
+                    message:"Noticia eliminada exitosamente"
+                })
+            }
+        })
     } catch (e) {
         console.error('Error al consultar Noticia: ',e);
-        res.status(500).json({mensaje:'Error al consultar noticias.'})
+        res.status(500).json({mensaje:'Error al eliminar noticia.'})
     }
 }

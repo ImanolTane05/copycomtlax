@@ -15,7 +15,7 @@ const NuevaNoticia=()=> {
     }=useForm({
         mode:'onChange',
         reValidateMode:'onChange'
-    })
+    });
 
     const navigate=useNavigate();
 

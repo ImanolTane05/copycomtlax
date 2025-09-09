@@ -88,7 +88,7 @@ export function InsertTableDialog({
     <>
       <TextInput
         placeholder={'# of rows (1-500)'}
-        label="Rows"
+        label="Filas"
         onChange={setRows}
         value={rows}
         data-test-id="table-modal-rows"
@@ -96,7 +96,7 @@ export function InsertTableDialog({
       />
       <TextInput
         placeholder={'# of columns (1-50)'}
-        label="Columns"
+        label="Columnas"
         onChange={setColumns}
         value={columns}
         data-test-id="table-modal-columns"
@@ -104,7 +104,7 @@ export function InsertTableDialog({
       />
       <DialogActions data-test-id="table-model-confirm-insert">
         <Button disabled={isDisabled} onClick={onClick}>
-          Confirm
+          Confirmar
         </Button>
       </DialogActions>
     </>
@@ -138,7 +138,7 @@ export function InsertNewTableDialog({
     <>
       <TextInput
         placeholder={'# of rows (1-500)'}
-        label="Rows"
+        label="Filas"
         onChange={setRows}
         value={rows}
         data-test-id="table-modal-rows"
@@ -146,7 +146,7 @@ export function InsertNewTableDialog({
       />
       <TextInput
         placeholder={'# of columns (1-50)'}
-        label="Columns"
+        label="Columnas"
         onChange={setColumns}
         value={columns}
         data-test-id="table-modal-columns"
@@ -154,7 +154,7 @@ export function InsertNewTableDialog({
       />
       <DialogActions data-test-id="table-model-confirm-insert">
         <Button disabled={isDisabled} onClick={onClick}>
-          Confirm
+          Confirmar
         </Button>
       </DialogActions>
     </>

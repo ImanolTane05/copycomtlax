@@ -35,6 +35,12 @@ const Navbar = () => {
             >
               Dashboard
             </button>
+            <button
+              onClick={()=> navigate('/admin/noticias')}
+              className='hover:bg-gray-700 px-3 py-1 rounded'
+            >
+              Noticias
+            </button>
           </>
         )}
       </div>

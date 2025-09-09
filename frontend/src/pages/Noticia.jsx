@@ -15,13 +15,15 @@ const Noticia=()=> {
     const [isLoading,setIsLoading]=useState(true);
     const [error,setError]=useState(null);
 
+    const [noticias,setNoticias]=useState([]);
+
     useEffect(()=>{
         const fetchArticle=async()=>{
             try {
                 const res=await axios.get(`http://localhost:5000/api/noticias/${id}`)
                 setArticle(res.data);
             } catch (err) {
-                setError("Error al recuperar el anuncio.");
+                setError("Error al recuperar el artículo.");
                 console.error(err);
             } finally {
                 setIsLoading(false);
@@ -29,6 +31,12 @@ const Noticia=()=> {
         }
         fetchArticle();
     },[id]);
+
+    useEffect(()=>{
+        axios.get('http://localhost:5000/api/noticias/')
+          .then(res=>setNoticias(res.data))
+          .catch(err=>console.log("Error al cargar noticias:",err));
+    },[]);
 
     if (isLoading) {
         return <>Cargando...</>
@@ -61,9 +69,17 @@ const Noticia=()=> {
             <span className="flex flex-col">
                 <div>Anuncios recientes</div>
                 <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 my-10 gap-10">
-                    <ArticleCard/>
-                    <ArticleCard/>
-                    <ArticleCard/>
+                    {
+                        noticias.map((noticia)=>(
+                            <ArticleCard
+                                key={noticia._id}
+                                id={noticia._id}
+                                title={noticia.title}
+                                lead={noticia.lead}
+                                image={noticia.headerPic}
+                            />
+                        ))
+                    }
                 </div>
             </span>
         </div>

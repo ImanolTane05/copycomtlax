@@ -20,9 +20,9 @@ router.get('/',obtenerNoticias);
 router.get('/:id',obtenerNoticia);
 
 // Actualizar noticia (admin autenticado)
-router.post('/:id/actualizar',verifyToken,actualizarNoticia);
+router.put('/:id',verifyToken,actualizarNoticia);
 
 // Eliminar noticia (admin autenticado)
-router.post('/:id/eliminar',verifyToken,eliminarNoticia);
+router.delete('/:id',verifyToken,eliminarNoticia);
 
 module.exports=router;
