@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useModal from "../components/RichTextEditor/hooks/useModal";
+import { Link } from "react-router-dom";
 
 const AdminNoticias=()=>{
     const navigate=useNavigate();
@@ -15,7 +16,6 @@ const AdminNoticias=()=>{
         axios.get('http://localhost:5000/api/noticias/')
           .then(res=>setNoticias(res.data))
           .catch(err=>setError(err));
-        console.log("Noticias:",noticias);
     }
 
     useEffect(()=>{
@@ -32,21 +32,29 @@ const AdminNoticias=()=>{
     
     return (
         <div className="flex flex-col m-5">
-            <h1 className="text-3xl">Administrar noticias</h1>
+            <h1 className="text-3xl text-center">Administrar noticias</h1>
+            <Link to="/noticias/crear"
+                className='mt-5 bg-amber-900 text-white p-3 w-[70%] hover:bg-amber-700 rounded-lg m-auto text-center text-2xl'
+            >
+              Nueva noticia
+            </Link>
             <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 my-10 gap-10">
                 {
                     noticias ?
                         noticias.map((noticia)=> (
                             <div 
                                 key={noticia._id} id={noticia._id} 
-                                className="hover:scale-105 transition-transform border shadow-lg rounded-lg bg-slate-100"
+                                className="hover:scale-105 transition-transform border shadow-lg rounded-lg bg-slate-100 cursor-pointer min-w-52"
                             >
-                                <div className="overflow-hidden">
+                                { noticia.headerPic ?
+                                <div className="overflow-hidden max-w-[95%] m-auto pt-2">
                                     <img 
-                                    src={noticia.headerPic ?? "logo512.png"}
-                                    alt=""
-                                    className="rounded-t-lg object-center flex m-auto"/>
+                                    src={noticia.headerPic}
+                                    alt={`image-${noticia._id}`}
+                                    className="m-auto"/>
                                 </div>
+                                : ""
+                                }
                                 <div className="p-5">
                                     <h2 className="text-2xl truncate font-black">
                                         {noticia.title ?? "Título de artículo"}
@@ -76,7 +84,6 @@ const AdminNoticias=()=>{
                                                                 const config = token
                                                                     ? { headers: { Authorization: `Bearer ${token}` } }
                                                                     : {};
-                                                                console.log("Config:\n",config)
                                                                 axios.delete(`http://localhost:5000/api/noticias/${noticia._id}`,config)
                                                                     .then(res=>{
                                                                         console.log(res);

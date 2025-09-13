@@ -14,20 +14,23 @@ export default function ArticleCard({
     }
 
     return(
-        <div key={id} id={id} className="hover:scale-105 transition-transform border shadow-lg rounded-lg bg-slate-100 cursor-pointer"
+        <div key={id} id={id} className="hover:scale-105 transition-transform border shadow-lg rounded-lg bg-slate-100 cursor-pointer min-w-52"
         onClick={handleClick}
         >
-            <div className="overflow-hidden">
-                <img 
-                src={image ?? "logo512.png"}
-                alt=""
-                className="rounded-t-lg object-center flex m-auto"/>
-            </div>
+            {image ?
+                <div className="overflow-hidden max-w-[95%] m-auto pt-2">
+                    <img 
+                    src={image}
+                    alt={`image-${id}`}
+                    className="m-auto"/>
+                </div>
+            : ""
+            }
             <div className="p-5">
-                <h2 className="text-2xl truncate font-black">
+                <h2 className="text-2xl font-bold">
                     {title ?? "Título de artículo"}
                 </h2>
-                <p className="text-justify resize-none h-auto min-w-[100px] w-11/12 whitespace-pre-wrap">
+                <p className="text-justify h-auto min-w-[100px] w-11/12">
                     {lead}
                 </p>
             </div>

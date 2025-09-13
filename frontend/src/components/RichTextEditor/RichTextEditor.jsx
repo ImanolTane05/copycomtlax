@@ -42,6 +42,22 @@ const loadContent=()=> {
     return value;
 }
 
+function LoadInitialContent({editorStateString}) {
+    const [editor]=useLexicalComposerContext();
+
+    useEffect(()=>{
+        if (editorStateString) {
+            try {
+                const editorState=editor.parseEditorState(editorStateString);
+                editor.setEditorState(editorState);
+            } catch (e) {
+                console.error("Error al insertar editorState:",e);
+            }
+        }
+    },[editor,editorStateString]);
+
+    return null;
+}
 
 /** Plugin personalizado de AutoFocus de Lexical.\
  * Los plugins de Lexical React son componentes de React,
@@ -68,7 +84,8 @@ function onError(error) {
 }
 
 export default function RichTextEditor({
-    onEditorStateChange
+    onEditorStateChange,
+    editorStateString
 }) {
     const isSmallWidthViewPort=useMediaQuery('(max-width:1025px)');
     const [floatingAnchorElem,setFloatingAnchorElem]=useState(null);
@@ -114,6 +131,7 @@ export default function RichTextEditor({
                     />
                     <OnChangePlugin onChange={onEditorStateChange}/>
                     <HistoryPlugin/>
+                    <LoadInitialContent editorStateString={editorStateString}/>
                     <CustomAutoFocusPlugin/>
                     <ListPlugin/>
                     <TablePlugin hasCellMerge={true} hasCellBackgroundColor={true}/>

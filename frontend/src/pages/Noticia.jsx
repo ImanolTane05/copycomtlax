@@ -55,19 +55,19 @@ const Noticia=()=> {
                 <header className="flex flex-col">
                     <h1 className="text-center font-bold text-3xl">{article.title}</h1>
                     <br/>
-                    <p className="whitespace-pre-wrap text-justify">{article.lead}</p>
+                    <p className="whitespace-pre-wrap text-justify my-5">{article.lead}</p>
                     <img 
                         src={article.headerPic} 
                         alt={article.title}
                         className="content-center"
                     />
                 </header>
-                <section className="m-[20px_auto]">
+                <section className="m-[20px_auto] w-[75%]">
                     <ViewContent editorStateString={article.body}/>
                 </section>
             </article>
-            <span className="flex flex-col">
-                <div>Anuncios recientes</div>
+            <span className="flex flex-col mt-3">
+                <h2 className="text-center font-bold text-2xl">Anuncios recientes</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 my-10 gap-10">
                     {
                         noticias.map((noticia)=>(

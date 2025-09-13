@@ -56,18 +56,20 @@ exports.obtenerNoticia=async(req,res)=>{
 // Editar noticias TODO
 exports.actualizarNoticia=async(req,res)=>{
     try {
-        Noticia.findByIdAndUpdate(req.params.id,
+        const noticia=await Noticia.findByIdAndUpdate(req.params.id,
             {
                 title:req.body.title,
                 lead:req.body.lead,
                 headerPic:req.body.headerPic,
                 body:req.body.body,
                 editedDate:Date.now()
-            }
-        )
+            },{new:true}
+        );
+        if (!noticia) return res.status(404).json({error:"No se encontró la noticia."});
+        res.json(noticia);
     } catch (e) {
-        console.error('Error al consultar Noticia: ',e);
-        res.status(500).json({mensaje:'Error al consultar noticias.'})
+        console.error('Error al actualizar Noticia:\n',e);
+        res.status(500).json({mensaje:'Error al consultar noticias.'});
     }
 }
 

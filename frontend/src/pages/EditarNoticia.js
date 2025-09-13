@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import RichTextEditor from "../components/RichTextEditor/RichTextEditor";
+import useModal from "../components/RichTextEditor/hooks/useModal";
 
 import axios from "axios";
 
@@ -21,9 +22,12 @@ const EditarNoticia=()=> {
 
     const navigate=useNavigate();
 
+    const [modal,showModal]=useModal();
+
     const [title,setTitle]=useState('');
     const [lead,setLead]=useState('');
     const [headerPic,setHeaderPic]=useState('');
+    const [removeHeader,setRemoveHeader]=useState(false);
     const [editorContent,setEditorContent]=useState(null);
 
     const [oldContent,setOldContent]=useState(null);
@@ -34,7 +38,10 @@ const EditarNoticia=()=> {
             try {
                 const res=await axios.get(`http://localhost:5000/api/noticias/${id}`)
                 setOldContent(res.data);
-                setTitle(oldContent.title)
+                setTitle(res.data.title);
+                if (res.data.lead) {setLead(res.data.lead)};
+                if (res.data.headerPic) {setHeaderPic(res.data.headerPic)};
+                setEditorContent(res.data.body);
             } catch (err) {
                 setError("Error al recuperar el artículo.");
                 console.error(err);
@@ -60,6 +67,7 @@ const EditarNoticia=()=> {
         }
         if (files!=null) {
             reader.readAsDataURL(files[0]);
+            setRemoveHeader(false);
         }
     }
 
@@ -70,16 +78,16 @@ const EditarNoticia=()=> {
                 ? { headers: { Authorization: `Bearer ${token}` } }
                 : {};
             const body=JSON.stringify(editorContent);
-            const response=await axios.post("http://localhost:5000/api/noticias/crear",{
+            const response=await axios.put(`http://localhost:5000/api/noticias/${id}`,{
                     title:data.title,
                     lead:data.lead,
-                    headerPic:headerPic,
+                    headerPic:removeHeader||headerPic=='' ? '' : headerPic,
                     body:body,
                     publishedDate:undefined,
                     editedDate:undefined
-            },config)
+            },config);
 
-            if (response.status===201) {
+            if (response.status===200) {
                 alert("Noticia actualizada.");
                 navigate('/admin/dashboard');
             }
@@ -94,6 +102,16 @@ const EditarNoticia=()=> {
         }
     }
     
+    if (isLoading) {
+        return <>
+            Cargando...
+        </>
+    }
+
+    if (error) {
+        return <>Error al abrir el editor.</>
+    }
+
     return (
         <div className="grid-cols-subgrid m-5">
             <h1 className="text-center text-2xl font-semibold">
@@ -107,6 +125,7 @@ const EditarNoticia=()=> {
                         onChange={(e)=>{setTitle(e.target.value)}}
                         type="text" 
                         className="w-[100%] border-[1px] p-1 border-black rounded-lg"
+                        defaultValue={title}
                         {...register('title',{
                             required:"El título es obligatorio"
                         })}
@@ -119,6 +138,7 @@ const EditarNoticia=()=> {
                         id="lead"
                         onChange={(e)=>setLead(e.target.value)}
                         className="w-[100%] border-[1px] border-black p-1 rounded-lg"
+                        defaultValue={lead}
                         {...register('lead')}
                     />
                 </div>
@@ -132,12 +152,49 @@ const EditarNoticia=()=> {
                             onChange:(e)=>handleSetHeading(e.target.files)
                         })}
                     />
+                    {
+                        headerPic && 
+                        <p>{headerPic==oldContent.headerPic && "Sin cambios"}
+                            <button 
+                                className="bg-red-900 hover:bg-red-700bg-red-900 hover:bg-red-600 active:bg-red-700 m-2 py-1 px-3 rounded-md text-white"
+                                onClick={()=>{
+                                    showModal("Eliminando encabezado",(onClose)=>(
+                                        <>
+                                            ¿Eliminar imagen de encabezado?
+                                            <div className="flex flex-row">
+                                                <button
+                                                    className="bg-red-900 hover:bg-red-600 m-2 py-1 px-3 rounded-md transition-transform text-white"
+                                                    onClick={()=>{
+                                                        setRemoveHeader(true);
+                                                        setHeaderPic('');
+                                                        onClose();
+                                                    }}
+                                                >
+                                                    Eliminar
+                                                </button>
+                                                <button
+                                                    className="bg-blue-900 hover:bg-blue-800 m-2 py-1 px-3 rounded-md transition-transform text-white"
+                                                    onClick={onClose}
+                                                >
+                                                    Cancelar
+                                                </button>
+                                            </div>
+                                        </>
+                                    ));
+                                }}
+                            >
+                                Eliminar
+                            </button>
+                            {modal}
+                        </p>
+                    }
                 </div>
-                {headerPic && <img src={headerPic} className="inline-block h-[200px]" />}
+                {headerPic && <img src={headerPic} className="inline-block max-h-[200px]" />}
                 <label htmlFor="body">Contenido</label>
                 <div className="editorWrapper">
                     <RichTextEditor
                         onEditorStateChange={handleEditorStateChange}
+                        editorStateString={oldContent.body}
                     />
                 </div>
                 <input 
@@ -151,7 +208,7 @@ const EditarNoticia=()=> {
                     type="submit"
                     className="bg-blue-900 hover:bg-blue-800 transition-transform text-white p-2 rounded-lg"
                 >
-                        Subir
+                        Actualizar
                 </button>
             </form>
         </div>
