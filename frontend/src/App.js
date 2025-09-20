@@ -31,6 +31,7 @@ const AppWrapper = () => {
       <Routes>
         <Route path="/" element={<Visitor />} />
         <Route path="/encuestas" element={<Encuestas />} />
+        <Route path="/contacto" element={<Contact />} />
 
         {/* Rutas admin */}
         <Route path="/admin" element={<LoginAdmin />} />
