@@ -1,19 +1,19 @@
 export default function contactCard(){
     return(
         <div className=" text-white p-1 rounded-lg shadow-md flex flex-col items-center justify-center w-full">
-            <h3 className="text-xl font-bold mb-4 text-center text-blue-300">Contactanos</h3>
+            <h3 className="text-xl font-bold mb-4 text-center text-blue-300">Contáctanos</h3>
             <p className="text-sm mb-3 text-center">
-                ¡Estamos aqui para ayudarte! Enviamos un mensaje o encuentranos.
+                ¡Estamos aquí para ayudarte! Envíanos un mensaje o encuéntranos.
             </p>
             <div className="text-center mb-4">
                 <p className="text-sm mb-2">
-                    <span className="font-semibold">Email:</span>{''}
-                    <a href="mailto:info@copycomtlax.com" className="text-blue-400 hover:underline">
-                        info@copycomtlax.com
+                    <span className="font-semibold">Email: </span>{''}
+                    <a href="mailto:copycomtlx@gmail.com" className="text-blue-400 hover:underline">
+                        copycomtlx@gmail.com
                     </a>
                 </p>
                 <p className="text-sm">
-                    <span className="font-semibold">Telefono:</span> Calle casa de Imanol 123, Tlaxcala
+                    <span className="font-semibold">Teléfono:</span> 246 175 4807
                 </p>
             </div>
             
