@@ -30,6 +30,9 @@ app.use('/api/noticias', noticiaRoutes);
 
 const uploadRoutes=require('./middleware/imgUploadMiddleware');
 app.use('/api/upload',uploadRoutes);
+=======
+const contactRoutes = require('./routes/contactRoutes');
+app.use('/api/contact', contactRoutes);
 
 // Conexión a MongoDB
 mongoose.connect(process.env.MONGO_URI)

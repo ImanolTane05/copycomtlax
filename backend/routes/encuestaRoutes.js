@@ -5,7 +5,7 @@ const {
   crearEncuesta,
   obtenerEncuestas,
   obtenerResultados,
-  responderEncuesta
+  responderEncuesta,
 } = require('../controllers/encuestaController');
 
 // Crear encuesta (solo admin autenticado)

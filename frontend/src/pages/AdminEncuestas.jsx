@@ -22,7 +22,7 @@ const AdminEncuestas = () => {
   useEffect(() => {
     axios.get('http://localhost:5000/api/encuestas')
       .then(res => setEncuestas(res.data))
-      .catch(err => setError('Error al cargar encuestas'));
+      .catch(() => setError('Error al cargar encuestas'));
   }, []);
 
   const cargarResultados = async (id) => {
@@ -42,11 +42,16 @@ const AdminEncuestas = () => {
     }
   };
 
-  const contarOpciones = (respuestas) => {
+  const contarOpciones = (respuestas, opciones) => {
     const conteo = {};
+    opciones.forEach(op => {
+      conteo[op] = 0;
+    });
     respuestas.forEach(r => {
       const val = r.respuesta;
-      conteo[val] = (conteo[val] || 0) + 1;
+      if (val in conteo) {
+        conteo[val]++;
+      }
     });
     return conteo;
   };
@@ -61,35 +66,47 @@ const AdminEncuestas = () => {
 
       {encuestas.map(encuesta => (
         <div key={encuesta._id} className="mb-8 border p-4 rounded shadow">
-          <h2 className="font-semibold">{encuesta.pregunta}</h2>
+          <h2 className="font-semibold mb-2">{encuesta.titulo}</h2>
           <button
             onClick={() => cargarResultados(encuesta._id)}
-            className="mt-2 px-3 py-1 bg-green-600 text-white rounded"
+            className="mb-4 px-3 py-1 bg-green-600 text-white rounded"
           >
             Ver resultados
           </button>
 
-          {resultados[encuesta._id] && encuesta.tipo === 'opcion' && (
-            <Bar
-              data={{
-                labels: Object.keys(contarOpciones(resultados[encuesta._id])),
-                datasets: [{
-                  label: 'Respuestas',
-                  data: Object.values(contarOpciones(resultados[encuesta._id])),
-                  backgroundColor: ['#60a5fa', '#34d399', '#f472b6'],
-                }]
-              }}
-              options={{ responsive: true }}
-            />
-          )}
+          {resultados[encuesta._id] && resultados[encuesta._id].map((pregunta, i) => (
+            <div key={i} className="mb-6">
+              <h3 className="font-semibold">{pregunta.texto}</h3>
 
-          {resultados[encuesta._id] && encuesta.tipo === 'abierta' && (
-            <ul className="mt-4 list-disc list-inside">
-              {resultados[encuesta._id].map((r, idx) => (
-                <li key={idx} className="text-gray-700">{r.respuesta}</li>
-              ))}
-            </ul>
-          )}
+              {['Cerrada', 'Opción múltiple'].includes(pregunta.tipo) ? (
+                pregunta.respuestas && pregunta.respuestas.length > 0 ? (
+                  <Bar
+                    data={{
+                      labels: Object.keys(contarOpciones(pregunta.respuestas, pregunta.opciones)),
+                      datasets: [{
+                        label: 'Respuestas',
+                        data: Object.values(contarOpciones(pregunta.respuestas, pregunta.opciones)),
+                        backgroundColor: ['#60a5fa', '#34d399', '#f472b6', '#facc15', '#f87171'],
+                      }]
+                    }}
+                    options={{ responsive: true }}
+                  />
+                ) : (
+                  <p className="text-sm text-gray-500 italic">Aún no hay respuestas.</p>
+                )
+              ) : (
+                pregunta.respuestas && pregunta.respuestas.length > 0 ? (
+                  <ul className="mt-2 list-disc list-inside">
+                    {pregunta.respuestas.map((r, idx) => (
+                      <li key={idx} className="text-gray-700">{r.respuesta}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-gray-500 italic">Aún no hay respuestas.</p>
+                )
+              )}
+            </div>
+          ))}
         </div>
       ))}
     </div>
