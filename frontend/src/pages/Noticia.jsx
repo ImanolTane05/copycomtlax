@@ -56,11 +56,14 @@ const Noticia=()=> {
                     <h1 className="text-center font-bold text-3xl">{article.title}</h1>
                     <br/>
                     <p className="whitespace-pre-wrap text-justify my-5">{article.lead}</p>
-                    <img 
-                        src={article.headerPic} 
-                        alt={article.title}
-                        className="content-center"
-                    />
+                    {
+                        article.headerPic &&
+                            <img 
+                                src={article.headerPic} 
+                                alt={article.title}
+                                className="content-center"
+                            />
+                    }
                 </header>
                 <section className="m-[20px_auto] w-[75%]">
                     <ViewContent editorStateString={article.body}/>

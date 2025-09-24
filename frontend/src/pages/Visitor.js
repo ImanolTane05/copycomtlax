@@ -51,6 +51,7 @@ const Visitor = () => {
                 <p className='text-3xl opacity-50'>No hay noticias.</p>  
               </div>
       }
+      </div>
       <LocalFooter>
         <ContactCard/>
       </LocalFooter>

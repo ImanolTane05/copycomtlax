@@ -31,17 +31,19 @@ const EditarNoticia=()=> {
     const [editorContent,setEditorContent]=useState(null);
 
     const [oldContent,setOldContent]=useState(null);
+    const [oldBody,setOldBody]=useState(null);
     const [error,setError]=useState(null);
     const [isLoading,setIsLoading]=useState(true);
     useEffect(()=>{
         const fetchOldContent=async()=>{
             try {
-                const res=await axios.get(`http://localhost:5000/api/noticias/${id}`)
+                const res=await axios.get(`http://localhost:5000/api/noticias/${id}`);
                 setOldContent(res.data);
                 setTitle(res.data.title);
                 if (res.data.lead) {setLead(res.data.lead)};
                 if (res.data.headerPic) {setHeaderPic(res.data.headerPic)};
                 setEditorContent(res.data.body);
+                setOldBody(res.data.body);
             } catch (err) {
                 setError("Error al recuperar el artículo.");
                 console.error(err);
@@ -77,12 +79,17 @@ const EditarNoticia=()=> {
             const config = token
                 ? { headers: { Authorization: `Bearer ${token}` } }
                 : {};
-            const body=JSON.stringify(editorContent);
+            let body;
+            if (editorContent===oldBody) {
+                body=oldBody;
+            } else {
+                body=JSON.stringify(editorContent);
+            }
             const response=await axios.put(`http://localhost:5000/api/noticias/${id}`,{
                     title:data.title,
                     lead:data.lead,
                     headerPic:removeHeader||headerPic=='' ? '' : headerPic,
-                    body:body,
+                    body:body??editorContent,
                     publishedDate:undefined,
                     editedDate:undefined
             },config);
@@ -101,7 +108,7 @@ const EditarNoticia=()=> {
             }
         }
     }
-    
+
     if (isLoading) {
         return <>
             Cargando...
@@ -157,7 +164,8 @@ const EditarNoticia=()=> {
                         <p>{headerPic==oldContent.headerPic && "Sin cambios"}
                             <button 
                                 className="bg-red-900 hover:bg-red-700bg-red-900 hover:bg-red-600 active:bg-red-700 m-2 py-1 px-3 rounded-md text-white"
-                                onClick={()=>{
+                                onClick={(e)=>{
+                                    e.preventDefault();
                                     showModal("Eliminando encabezado",(onClose)=>(
                                         <>
                                             ¿Eliminar imagen de encabezado?
@@ -200,7 +208,7 @@ const EditarNoticia=()=> {
                 <input 
                     id="body"
                     type="text"
-                    defaultValue={JSON.stringify(editorContent)} 
+                    defaultValue={editorContent} 
                     hidden={true}
                     {...register('body')}
                 />
