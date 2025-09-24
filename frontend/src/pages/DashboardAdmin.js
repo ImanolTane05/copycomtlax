@@ -12,6 +12,11 @@ const DashboardAdmin = () => {
       >
         Registrar Usuario
       </Link>
+      <Link to="/noticias/crear"
+      className='bg-amber-900 text-white p-1 hover:bg-amber transition-transform rounded-lg'
+      >
+        Nueva noticia
+      </Link>
     </div>
   );
 };

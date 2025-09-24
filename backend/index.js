@@ -4,6 +4,10 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
+const bodyParser=require('body-parser');
+
+app.use(bodyParser.json({limit:"100mb"}));
+app.use(bodyParser.urlencoded({extended:true,limit:"100mb"}));
 
 // Middleware CORS - configuración explícita
 app.use(cors({
@@ -21,6 +25,12 @@ app.use('/api/auth', authRoutes);
 const encuestaRoutes = require('./routes/encuestaRoutes');
 app.use('/api/encuestas', encuestaRoutes);
 
+const noticiaRoutes = require('./routes/noticiaRoutes');
+app.use('/api/noticias', noticiaRoutes);
+
+const uploadRoutes=require('./middleware/imgUploadMiddleware');
+app.use('/api/upload',uploadRoutes);
+=======
 const contactRoutes = require('./routes/contactRoutes');
 app.use('/api/contact', contactRoutes);
 

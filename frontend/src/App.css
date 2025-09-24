@@ -36,3 +36,24 @@
     transform: rotate(360deg);
   }
 }
+
+.editor-paragraph {
+  margin: 0 0 0.75em 0;
+  position: relative;
+}
+
+.editor-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 0.5em;
+}
+
+.debug-treetype-button {
+  margin-right: 12px;
+}
+
+label {
+  display:flex;
+  flex-wrap:wrap;
+  wrap:10px;
+}

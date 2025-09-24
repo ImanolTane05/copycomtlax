@@ -13,10 +13,12 @@ const mongoose=require('mongoose');
 
 const NoticiaSchema=new mongoose.Schema({
     title:{type:String,required:true},
-    authors:{type:[mongoose.Schema.Types.ObjectId],required:true,ref:'User'},
+    //authors:{type:[mongoose.Schema.Types.ObjectId],required:true,ref:'User'}, 
     lead:{type:mongoose.Schema.Types.String},
     headerPic:{type:mongoose.Schema.Types.String},
     body:{type:mongoose.Schema.Types.String,required:true},
     publishedDate:{type:Date,default:Date.now},
-    editedDate:{type:Date}
+    editedDate:{type:Date,default:Date.now}
 })
+
+module.exports=mongoose.model('Noticia',NoticiaSchema);

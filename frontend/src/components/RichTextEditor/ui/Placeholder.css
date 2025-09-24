@@ -1,0 +1,9 @@
+.placeholder {
+    position:absolute;
+    overflow:hidden;
+    user-select:none;
+    pointer-events:none;
+    color:#999;
+    top:6px;
+    left:28px;
+}
