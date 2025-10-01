@@ -8,6 +8,7 @@ import DashboardAdmin from './pages/DashboardAdmin';
 import Encuestas from './pages/Encuestas';
 import AdminEncuestas from './pages/AdminEncuestas';
 import CrearEncuesta from './pages/CrearEncuesta';
+import EditarEncuesta from './pages/EditarEncuesta'; // <--- Importar el componente de edición
 import Navbar from './components/Navbar';
 import NuevaNoticia from './pages/NuevaNoticia';
 import Noticia from './pages/Noticia';
@@ -70,6 +71,13 @@ const AppWrapper = () => {
           </ProtectedRoute>
         } />
         <Route path='admin/noticias/editar/:id' element={<EditarNoticia/>}/>
+
+        
+        <Route path="/admin/editar/:id" element={
+          <ProtectedRoute>
+            <EditarEncuesta />
+          </ProtectedRoute>
+        } />
 
         {/* Ruta por defecto (404) */}
         <Route path="*" element={<h1 style={{ textAlign: 'center', marginTop: '50px' }}>404 - Página no encontrada</h1>} />

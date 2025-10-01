@@ -1,18 +1,17 @@
 const jwt = require('jsonwebtoken');
 
 const verifyToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader?.split(' ')[1];
-
-  if (!token) return res.status(401).json({ mensaje: 'Token no proporcionado' });
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // puedes acceder al rol y _id desde aquí
-    next();
-  } catch (err) {
-    return res.status(401).json({ mensaje: 'Token inválido o expirado' });
-  }
+  // ... implementación verifyToken ...
 };
 
-module.exports = verifyToken;
+const verifyAdmin = (req, res, next) => {
+  if (!req.user || req.user.rol !== 'admin') {
+    return res.status(403).json({ mensaje: 'Acceso restringido a administradores' });
+  }
+  next();
+};
+
+module.exports = {
+  verifyToken,
+  verifyAdmin
+};

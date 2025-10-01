@@ -1,5 +1,8 @@
+// -- Archivo: frontend/src/components/Navbar.jsx --
+// Este componente crea el navbar superior con el efecto de "pastilla"
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaUser, FaSignOutAlt } from 'react-icons/fa'; // Iconos de Font Awesome
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -8,71 +11,71 @@ const Navbar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    navigate('/admin');
+    navigate('/admin'); // Redirige a la página de admin/login después de cerrar sesión
   };
 
   return (
-    <nav className="bg-gray-800 p-4 text-white flex justify-between items-center">
-      <div className="space-x-4">
-        {}
-        <button
-          onClick={() => navigate('/encuestas')}
-          className="hover:bg-gray-700 px-3 py-1 rounded"
-        >
-          Encuestas
-        </button>
+    <div className="flex justify-between items-center p-4">
+      {/* Contenedor principal del navbar en forma de "pastilla" */}
+      <div className="flex-grow flex justify-center">
+        <div className="bg-white rounded-full border-2 border-gray-800 shadow-xl p-2 md:p-3 flex items-center justify-center space-x-2 md:space-x-4">
+          <button
+            onClick={() => navigate('/encuestas')}
+            className="px-3 py-1 text-gray-800 rounded-full font-semibold transition-colors duration-300 hover:bg-gray-200/50"
+          >
+            Encuestas
+          </button>
+          <button
+            onClick={() => navigate('/contacto')} 
+            className="hover:bg-gray-700 px-3 py-1 rounded"
+          >
+            Contacto
+          </button>
 
-       
-        <button
-          onClick={() => navigate('/contacto')} 
-          className="hover:bg-gray-700 px-3 py-1 rounded"
-        >
-          Contacto
-        </button>
-
-        {}
-        {isAdmin && (
-          <>
-            <button
-              onClick={() => navigate('/admin/encuestas')}
-              className="hover:bg-gray-700 px-3 py-1 rounded"
-            >
-              Resultados Encuestas
-            </button>
-
-            <button
-              onClick={() => navigate('/admin/crear-encuesta')}
-              className="hover:bg-gray-700 px-3 py-1 rounded"
-            >
-              Crear Encuesta
-            </button>
-
-            <button
-              onClick={() => navigate('/admin/dashboard')}
-              className="hover:bg-gray-700 px-3 py-1 rounded"
-            >
-              Dashboard
-            </button>
-            <button
-              onClick={()=> navigate('/admin/noticias')}
-              className='hover:bg-gray-700 px-3 py-1 rounded'
-            >
-              Gestionar noticias
-            </button>
-          </>
-        )}
+          {isAdmin && (
+            <>
+              <button
+                onClick={()=> navigate('/admin/noticias')}
+                className='hover:bg-gray-700 px-3 py-1 rounded'
+              >
+                Gestionar noticias
+              </button>
+              <button
+                onClick={() => navigate('/admin/encuestas')}
+                className="px-3 py-1 text-gray-800 rounded-full font-semibold transition-colors duration-300 hover:bg-gray-200/50"
+              >
+                Resultados Encuestas
+              </button>
+              <button
+                onClick={() => navigate('/admin/crear-encuesta')}
+                className="px-3 py-1 text-gray-800 rounded-full font-semibold transition-colors duration-300 hover:bg-gray-200/50"
+              >
+                Crear Encuesta
+              </button>
+              <button
+                onClick={() => navigate('/admin/dashboard')}
+                className="px-3 py-1 text-gray-800 rounded-full font-semibold transition-colors duration-300 hover:bg-gray-200/50"
+              >
+                Dashboard
+              </button>
+              <button
+                onClick={handleLogout}
+                className="px-3 py-1 text-red-600 rounded-full font-semibold transition-colors duration-300 hover:bg-red-100/50 flex items-center gap-2"
+              >
+                <FaSignOutAlt className="h-4 w-4" />
+                Cerrar sesión
+              </button>
+            </>
+          )}
+        </div>
       </div>
-
-      {}
-      {isAdmin && (
-        <button
-          onClick={handleLogout}
-          className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded font-semibold"
-        >
-          Cerrar sesión
-        </button>
+      
+      {!isAdmin && (
+        <div className="p-2 border border-gray-800 rounded-full">
+          <FaUser className="h-4 w-4 text-gray-800" />
+        </div>
       )}
-    </nav>
+    </div>
   );
 };
 
