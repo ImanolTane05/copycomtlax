@@ -27,7 +27,7 @@ const Navbar = () => {
           </button>
           <button
             onClick={() => navigate('/contacto')} 
-            className="hover:bg-gray-700 px-3 py-1 rounded"
+            className="px-3 py-1 text-gray-800 rounded-full font-semibold transition-colors duration-300 hover:bg-gray-200/50"
           >
             Contacto
           </button>
@@ -36,7 +36,7 @@ const Navbar = () => {
             <>
               <button
                 onClick={()=> navigate('/admin/noticias')}
-                className='hover:bg-gray-700 px-3 py-1 rounded'
+                className='px-3 py-1 text-gray-800 rounded-full font-semibold transition-colors duration-300 hover:bg-gray-200/50'
               >
                 Gestionar noticias
               </button>

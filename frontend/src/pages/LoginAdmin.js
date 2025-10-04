@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, Link } from 'react-router-dom';
+import { FaEye,FaEyeSlash } from 'react-icons/fa';
 import axios from 'axios';
 import styles from  './Auth.module.css'; 
 
@@ -40,7 +41,7 @@ const LoginAdmin = () => {
   return (
     <section className={styles.authSection}>
       <div className={styles.imageContainer}>
-        <img src="/Logo.png" alt="Logo" className={styles.image} />
+        <img src="../public/icons/logo/Logo192.png" alt="Logo" className={styles.image} />
       </div>
 
       <div className={styles.formContainer}>
@@ -94,7 +95,7 @@ const LoginAdmin = () => {
                 padding: 0,
               }}
             >
-              {showPassword ? '🙈' : '👁️'}
+              {showPassword ? <FaEye/> : <FaEyeSlash/>}
             </button>
             {errors.password && <div className={styles.error}>{errors.password.message}</div>}
           </div>

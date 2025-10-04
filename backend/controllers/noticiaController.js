@@ -1,7 +1,7 @@
 const Noticia=require('../models/Noticia');
 
 // Crear noticia (requiere token admin o ayudante)
-exports.crearNoticia=async(req,res) => {
+const crearNoticia=async(req,res) => {
     try {
         const noticia=new Noticia({
             title:req.body.title,
@@ -20,7 +20,7 @@ exports.crearNoticia=async(req,res) => {
 }
 
 // Consultar noticias (excluyendo el cuerpo)
-exports.obtenerNoticias=async(req,res)=>{
+const obtenerNoticias=async(req,res)=>{
     try {
         const noticias=await Noticia.find({}).select('-body').sort({publishedDate:-1});
         // ---Intento de partición de resultados para paginado
@@ -43,7 +43,7 @@ exports.obtenerNoticias=async(req,res)=>{
 }
 
 // Consultar detalles de noticia
-exports.obtenerNoticia=async(req,res)=>{
+const obtenerNoticia=async(req,res)=>{
     try {
         const noticia=await Noticia.findById(req.params.id);
         res.json(noticia);
@@ -53,8 +53,7 @@ exports.obtenerNoticia=async(req,res)=>{
     }
 }
 
-// Editar noticias TODO
-exports.actualizarNoticia=async(req,res)=>{
+const actualizarNoticia=async(req,res)=>{
     try {
         const noticia=await Noticia.findByIdAndUpdate(req.params.id,
             {
@@ -73,8 +72,7 @@ exports.actualizarNoticia=async(req,res)=>{
     }
 }
 
-// Eliminar noticias TODO
-exports.eliminarNoticia=async(req,res)=>{
+const eliminarNoticia=async(req,res)=>{
     try {
         Noticia.findByIdAndDelete(req.params.id).then((data)=>{
             if(!data) {
@@ -91,4 +89,12 @@ exports.eliminarNoticia=async(req,res)=>{
         console.error('Error al consultar Noticia: ',e);
         res.status(500).json({mensaje:'Error al eliminar noticia.'})
     }
+}
+
+module.exports={
+    crearNoticia,
+    obtenerNoticias,
+    obtenerNoticia,
+    actualizarNoticia,
+    eliminarNoticia
 }

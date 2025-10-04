@@ -33,8 +33,8 @@ const AdminNoticias=()=>{
     return (
         <div className="flex flex-col m-5">
             <h1 className="text-3xl text-center">Administrar noticias</h1>
-            <Link to="/noticias/crear"
-                className='mt-5 bg-amber-900 text-white p-3 w-[70%] hover:bg-amber-700 rounded-lg m-auto text-center text-2xl'
+            <Link to="/admin/crear-noticia"
+                className='mt-5 bg-amber-800 text-white py-3 px-6 w-fit hover:bg-amber-700 active:bg-amber-900 rounded-lg m-auto text-center text-2xl'
             >
               Nueva noticia
             </Link>

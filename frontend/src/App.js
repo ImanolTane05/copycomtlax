@@ -27,7 +27,7 @@ const AppWrapper = () => {
   const location = useLocation();
 
   // No mostrar navbar en login admin
-  const noNavbarRoutes = ['/admin'];
+  const noNavbarRoutes = ['/login'];
 
   return (
     <>
@@ -39,7 +39,7 @@ const AppWrapper = () => {
         <Route path="/contacto" element={<Contact />} />
 
         {/* Rutas admin */}
-        <Route path="/admin" element={<LoginAdmin />} />
+        <Route path="/login" element={<LoginAdmin />} />
         <Route path="/register" element={<Register />} />
 
         <Route path="/admin/dashboard" element={
@@ -59,7 +59,7 @@ const AppWrapper = () => {
           </ProtectedRoute>
         } />
         {/*Rutas de Noticias*/}
-        <Route path="/noticias/crear" element={
+        <Route path="/admin/crear-noticia" element={
           <ProtectedRoute>
             <NuevaNoticia/>
           </ProtectedRoute>

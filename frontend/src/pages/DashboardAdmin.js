@@ -12,7 +12,7 @@ const DashboardAdmin = () => {
       >
         Registrar Usuario
       </Link>
-      <Link to="/noticias/crear"
+      <Link to="/admin/crear-noticia"
       className='bg-amber-900 text-white p-1 hover:bg-amber transition-transform rounded-lg'
       >
         Nueva noticia
