@@ -41,7 +41,7 @@ const LoginAdmin = () => {
   return (
     <section className={styles.authSection}>
       <div className={styles.imageContainer}>
-        <img src="../public/icons/logo/Logo192.png" alt="Logo" className={styles.image} />
+        <img src="/logo/Logo512.png" alt="Logo" className={styles.image} />
       </div>
 
       <div className={styles.formContainer}>

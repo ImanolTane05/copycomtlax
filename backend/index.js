@@ -16,7 +16,7 @@ app.use(cors({
   credentials: true,  // Importante si usas cookies o sesiones
 }));
 
-// Middleware para parsear JSON, después de CORS
+// Middleware para analizar JSON, después de CORS
 app.use(express.json());
 
 // Rutas
