@@ -38,9 +38,10 @@
 .formContainer {
   flex: 1 1 500px; /* Aquí está el aumento del ancho */
   min-width: 650px; /* Aquí también */
-  background: var(--blanco);
+  background: rgba(255,255,255,0.85);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   border-radius: 10px;
+  backdrop-filter:blur(10px);
   padding: 2rem;
   box-sizing: border-box;
   max-height: 90vh;
@@ -81,6 +82,7 @@
 
 .inputGroup {
   margin-bottom: 1.5rem;
+  position:relative;
 }
 
 .label {
@@ -92,7 +94,7 @@
 
 .input {
   width: 100%;
-  padding: 0.75rem;
+  padding: 0.75rem 40px 0.75rem 0.75rem;
   border: 1px solid #e2e8f0;
   border-radius: 5px;
   font-size: 1rem;
@@ -122,6 +124,10 @@
 
 .submitButton:hover {
   background: #967c5e;
+}
+
+.submitButton:active {
+  background: #77624b;
 }
 
 .toggleText {
