@@ -10,7 +10,7 @@ const urlsToCache = [
 ];
 
 
-// 1️⃣ Instalación del SW y cacheo inicial
+//Instalación del SW y cacheo inicial
 self.addEventListener('install', (event) => {
   console.log('[Service Worker] Instalando...');
   event.waitUntil(
@@ -21,7 +21,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// 2️⃣ Activación del SW y limpieza de versiones antiguas
+//Activación del SW y limpieza de versiones antiguas
 self.addEventListener('activate', (event) => {
   console.log('[Service Worker] Activado');
   event.waitUntil(
@@ -37,25 +37,25 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// 3️⃣ Interceptar peticiones y responder desde caché o red
+//Interceptar peticiones y responder desde caché o red
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
       return (
         response ||
-        fetch(event.request).catch(() => caches.match('/offline.html'))
+        fetch(event.request).catch(() => caches.match('/Offline.html'))
       );
     })
   );
 });
 
-// 4️⃣ Notificaciones push (opcional)
+//Notificaciones push (opcional)
 self.addEventListener('push', (event) => {
   const data = event.data ? event.data.text() : 'Notificación sin texto';
   event.waitUntil(
     self.registration.showNotification('Copycomtlax', {
       body: data,
-      icon: '/icons/icon-192x192.png'
+      icon: '/logo192.png'
     })
   );
 });
