@@ -1,3 +1,6 @@
+const {APP_NAME}=require("shared");
+console.log(`Iniciando ${APP_NAME}...`);
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -38,6 +41,10 @@ app.use('/api/contact', contactRoutes);
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✅ Conectado a MongoDB'))
   .catch(err => console.error('❌ Error de conexión:', err));
+
+app.get("/",(req,res)=>{
+    res.send("API ejecutándose correctamente");
+})
 
 // Puerto
 const PORT = process.env.PORT || 5000;

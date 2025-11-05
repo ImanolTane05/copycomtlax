@@ -1,5 +1,6 @@
-import React from 'react';
+import {React,useEffect,useState} from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
 
 import Visitor from './pages/Visitor';
 import LoginAdmin from './pages/LoginAdmin';
@@ -24,6 +25,18 @@ const ProtectedRoute = ({ children }) => {
 
 // Componente para controlar la visibilidad del Navbar según ruta
 const AppWrapper = () => {
+  // Verificar conexión con API
+  const [message,setMessage]=useState("Cargando...");
+
+  useEffect(()=>{
+    axios.get("http://localhost:5000"
+    ).then((res)=>{
+      setMessage(res.data);
+      console.log("Data:",res.data);
+      console.log(message);
+    })
+  },[]);
+
   const location = useLocation();
 
   // No mostrar navbar en login admin

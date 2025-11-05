@@ -96,7 +96,7 @@ const NuevaNoticia=()=> {
                             required:"El título es obligatorio"
                         })}
                     />
-                    {errors.name && <div className={styles.error}>{errors.name.message}</div>}
+                    {errors.title && <div className={styles.error}>{errors.name.message}</div>}
                 </div>
                 <label htmlFor="lead">Introducción</label>
                 <div className="pb-2">

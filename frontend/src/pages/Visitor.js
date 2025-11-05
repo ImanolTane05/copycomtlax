@@ -26,7 +26,7 @@ const Visitor = () => {
   return (
     <div className='flex flex-col min-h-screen'>
       <div className='p-20 text-center'>
-        <h1 className='text-3xl'>Periodistas Unidos</h1>
+        <h1 className='text-3xl'>Colegio de Periodistas y Comunicadores de Tlaxcala A.C.</h1>
           <p>Bienvenido a la sección pública de noticias.</p>
           { 
             noticias ?
