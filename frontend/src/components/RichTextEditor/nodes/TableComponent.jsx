@@ -59,15 +59,12 @@ import {IS_APPLE} from '../utils/environment';
 import {CellContext} from '../plugins/TablePlugin';
 import {
   $isTableNode,
-  Cell,
   cellHTMLCache,
   cellTextContentCache,
   createRow,
   createUID,
   exportTableCellsToHTML,
   extractRowsFromHTML,
-  Rows,
-  TableNode,
 } from './TableNode';
 
 const NO_CELLS = [];

@@ -14,7 +14,7 @@ app.use(bodyParser.urlencoded({extended:true,limit:"100mb"}));
 
 // Configurar CORS: permitir solicitudes desde localhost:3000 
 app.use(cors({
-  origin: 'http://localhost:3000',  // Cambia aquí si tu frontend usa otro origen
+  origin: 'http://localhost:5173',  // Cambia aquí si tu frontend usa otro origen
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   credentials: true,  // Importante si usas cookies o sesiones
 }));

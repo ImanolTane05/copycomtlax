@@ -22,8 +22,6 @@ import {
   DRAGOVER_COMMAND,
   DRAGSTART_COMMAND,
   DROP_COMMAND,
-  LexicalCommand,
-  LexicalEditor,
 } from 'lexical';
 import {useEffect, useRef, useState} from 'react';
 import {CAN_USE_DOM} from '../../utils/canUseDOM';
@@ -31,7 +29,6 @@ import {
   $createInlineImageNode,
   $isInlineImageNode,
   InlineImageNode,
-  InlineImagePayload,
 } from '../../nodes/InlineImageNode';
 import Button from '../../ui/Button';
 import {DialogActions} from '../../ui/Dialog';
