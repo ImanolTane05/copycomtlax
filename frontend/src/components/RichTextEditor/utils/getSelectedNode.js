@@ -7,7 +7,6 @@
 */
 
 import {$isAtNodeEnd} from '@lexical/selection';
-import {ElementNode,RangeSelection,TextNode} from 'lexical';
 
 export function getSelectedNode(selection,) {
     const anchor=selection.anchor;

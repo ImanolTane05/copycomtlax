@@ -30,7 +30,6 @@ import {
     $createQuoteNode,
     $isHeadingNode,
     $isQuoteNode,
-    HeadingTagType
 } from '@lexical/rich-text';
 import {
     $isParentElementRTL,

@@ -1,0 +1,18 @@
+{
+  "name": "copycomtlax-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start:backend": "npm run start --workspace=backend",
+    "start:frontend": "npm run dev --workspace=frontend",
+    "start:all": "concurrently \"npm run start:backend\" \"npm run start:frontend\""
+  },
+  "workspaces": [
+    "backend",
+    "frontend",
+    "shared"
+  ],
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
