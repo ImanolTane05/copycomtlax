@@ -1,5 +1,5 @@
-const {APP_NAME}=require("shared");
-console.log(`Iniciando ${APP_NAME}...`);
+//const {APP_NAME}=require("shared");
+//console.log(`Iniciando ${APP_NAME}...`);
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -12,7 +12,7 @@ const bodyParser=require('body-parser');
 app.use(bodyParser.json({limit:"100mb"}));
 app.use(bodyParser.urlencoded({extended:true,limit:"100mb"}));
 
-// Configurar CORS: permitir solicitudes desde localhost:3000 
+// Configurar CORS: permitir solicitudes desde el frontend 
 app.use(cors({
   origin: 'http://localhost:5173',  // Cambia aquí si tu frontend usa otro origen
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],

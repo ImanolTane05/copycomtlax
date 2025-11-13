@@ -31,7 +31,8 @@
     "start": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "dev": "npm start"
+    "dev": "npm start",
+    "test":"mocha"
   },
   "eslintConfig": {
     "extends": []

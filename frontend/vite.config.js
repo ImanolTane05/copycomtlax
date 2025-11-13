@@ -9,5 +9,8 @@ export default defineConfig({
     ],
     build: {
         outDir:"build" // Salida de build predeterminada de CRA
+    },
+    server: {
+        host:true // Hacer app accessible fuera del contenedor
     }
 });
