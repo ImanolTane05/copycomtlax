@@ -1,4 +1,4 @@
-const Encuesta = require("../models/encuesta");
+const Encuesta = require("../models/Encuesta");
 const Respuesta = require('../models/Respuesta');
 const { genAI } = require('../geminiConfig');
 

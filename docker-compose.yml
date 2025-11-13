@@ -1,0 +1,37 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    networks:
+      - copycomtlax_network
+    environment:
+      MONGO_URI: ${MONGO_URI}
+    depends_on:
+      - mongodb
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    networks:
+      - copycomtlax_network
+    environment:
+      - REACT_APP_API_URL=http://backend:5000
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "${MONGO_PORT}:27017"
+    networks:
+      - copycomtlax_network
+    volumes:
+      - mongo-data:/data/db
+
+networks:
+  copycomtlax_network:
+    driver: bridge
+
+volumes:
+  mongo-data:
+    driver: local # Los datos de MongoDB deben persistir en local
