@@ -12,17 +12,28 @@ const bodyParser=require('body-parser');
 app.use(bodyParser.json({limit:"100mb"}));
 app.use(bodyParser.urlencoded({extended:true,limit:"100mb"}));
 
-// Configurar CORS: permitir solicitudes desde el frontend 
-app.use(cors({
-  origin: 'http://localhost:5173',  // Cambia aquí si tu frontend usa otro origen
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  credentials: true,  // Importante si usas cookies o sesiones
-}));
+// ✅ CONFIGURACIÓN CORS CORREGIDA
+const allowedOrigins = [
+  'http://localhost:5173', 
+  'http://127.0.0.1:5173',
+];
 
-// Middleware para analizar JSON, después de CORS
+const corsOptions = {
+    origin: '*', // Permite CUALQUIER origen para facilitar la prueba con el móvil
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    credentials: true, 
+};
+
+app.use(cors(corsOptions));
+
+// Middleware para analizar JSON
 app.use(express.json());
 
-// Rutas
+// Servir Archivos Estáticos (Imágenes)
+app.use('/uploads', express.static('uploads'));
+
+
+// Rutas existentes
 const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes);
 
@@ -37,13 +48,22 @@ app.use('/api/upload',uploadRoutes);
 const contactRoutes = require('./routes/contactRoutes');
 app.use('/api/contact', contactRoutes);
 
+const tokenRoutes = require('./routes/tokenRoutes'); 
+app.use('/api/tokens', tokenRoutes); 
+
+
+// ✅ RUTA DE NOTIFICACIONES IMPORTADA Y USADA
+const notificationRoutes = require('./routes/notificationRoutes'); 
+app.use('/api', notificationRoutes); 
+
+
 // Conexión a MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✅ Conectado a MongoDB'))
   .catch(err => console.error('❌ Error de conexión:', err));
 
 app.get("/",(req,res)=>{
-    res.send("API ejecutándose correctamente");
+    res.send("API ejecutándose correctamente");
 })
 
 // Puerto
