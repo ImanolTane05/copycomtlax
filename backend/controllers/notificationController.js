@@ -1,41 +1,69 @@
-const Notificacion = require('../models/Notificacion'); 
+const Notificacion = require('../models/Notificacion');
 
 /**
  * @route GET /api/notificaciones
- * @desc Obtiene notificaciones generales. (Evita el 401 si no hay token)
- * @access Public (Temporalmente)
+ * @desc Obtiene notificaciones generales o del usuario logueado
+ * @access Público temporal
  */
 exports.getNotifications = async (req, res) => {
-    
-    // Obtiene el ID del usuario si está disponible (si verifyToken se usó en la ruta)
-    // De lo contrario, userId será null, lo que nos permite buscar solo notificaciones generales.
-    const userId = req.user ? req.user.id : null; 
-    
+    const userId = req.user?.id || null;
+
     try {
-        let query = {};
-        
-        // Si el usuario está autenticado, busca sus notificaciones O las generales.
-        if (userId) {
-            query = {
-                $or: [
-                    { userId: userId },
-                    { userId: null } 
-                ]
-            };
-        } else {
-            // Si no hay sesión (lo que pasa ahora en tu móvil), SOLO busca notificaciones generales
-             query = { userId: null };
-        }
+        const query = userId
+            ? { $or: [{ userId }, { userId: null }] }
+            : { userId: null };
 
         const notificaciones = await Notificacion.find(query)
-        .sort({ fecha: -1 }) // Ordena por fecha descendente
-        .limit(50);          
+            .sort({ fecha: -1 })
+            .limit(50);
 
-        // Envía el array (vacío o con datos). Esto resolverá el error 401.
-        res.status(200).json(notificaciones);
-
+        return res.status(200).json(notificaciones);
     } catch (error) {
-        console.error("Error al obtener notificaciones de la DB:", error);
-        res.status(500).json({ mensaje: "Error interno del servidor al obtener notificaciones." });
+        console.error("❌ Error al obtener notificaciones:", error);
+        return res.status(500).json({ mensaje: "Error interno del servidor." });
+    }
+};
+
+
+/**
+ * @route PATCH /api/notificaciones/:id/leida
+ * @desc Marca una notificación como leída
+ */
+exports.markAsRead = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const notif = await Notificacion.findByIdAndUpdate(
+            id,
+            { leida: true },
+            { new: true }
+        );
+
+        if (!notif) return res.status(404).json({ mensaje: "Notificación no encontrada" });
+
+        return res.status(200).json(notif);
+    } catch (error) {
+        console.error("❌ Error al marcar leída:", error);
+        return res.status(500).json({ mensaje: "Error interno" });
+    }
+};
+
+
+/**
+ * @route DELETE /api/notificaciones/:id
+ * @desc Elimina notificación
+ */
+exports.deleteNotification = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const notif = await Notificacion.findByIdAndDelete(id);
+
+        if (!notif) return res.status(404).json({ mensaje: "Notificación no encontrada" });
+
+        return res.status(200).json({ mensaje: "Notificación eliminada" });
+    } catch (error) {
+        console.error("❌ Error al eliminar:", error);
+        return res.status(500).json({ mensaje: "Error interno" });
     }
 };
