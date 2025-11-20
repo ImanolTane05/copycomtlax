@@ -32,7 +32,7 @@
     "build": "vite build",
     "serve": "vite preview",
     "dev": "npm start",
-    "test":"mocha"
+    "test": "mocha"
   },
   "eslintConfig": {
     "extends": []
@@ -51,6 +51,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.1.0",
+    "mocha": "^11.7.5",
     "vite": "^7.2.0"
   }
 }

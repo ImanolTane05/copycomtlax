@@ -1,7 +1,8 @@
-var assert=require("assert");
+var assert = require("assert");
+var sumar = require("../src/sumar");
 
-describe("Frontend - Sumar números",function() {
-    it("Regresa la suma de 5 + 6",function() {
-        assert.equal(9+10,21);
+describe("Frontend - Sumar números", function() {
+    it("Regresa la suma de 5 + 6", function() {
+        assert.equal(sumar(5, 6), 11);
     });
 });
