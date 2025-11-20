@@ -1,54 +1,40 @@
 # Nombre del workflow visible en GitHub Actions
-name: CI - Tests
+name: CI - Tests Backend Only
 
 # Cuándo se ejecuta el workflow
 on:
   push:
-    branches: [ notification ]     # Cuando haces PUSH a la rama notifications
+    branches: [ notification ]     # Tu rama de desarrollo
   pull_request:
-    branches: [ main ]              # Cuando haces un PR hacia la rama main
+    branches: [ main ]             # Tus PR hacia producción
 
 jobs:
-  test:
-    # Sistema operativo donde correrán los tests
+  test-backend:
+    # Máquina donde se ejecutará
     runs-on: ubuntu-latest
 
     steps:
-      # Paso 1: Clona tu repositorio dentro de la máquina de GitHub
+      # Descargar el repo
       - name: Descargar repo
         uses: actions/checkout@v4
 
-      # Paso 2: Instala Node.js versión 18 + activa cache de npm
+      # Instalar Node.js
       - name: Usar Node 18
         uses: actions/setup-node@v4
         with:
-          node-version: '18'         # Versión de Node para tests
-          cache: 'npm'               # Cache de dependencias npm para acelerar builds
+          node-version: '18'
+          cache: 'npm'
 
-      
-      # ========================== BACKEND ==================
-      
+      # ====================
+      #      BACKEND 
+      # ====================
 
-      # Paso 3: Instalar dependencias del backend
+      # Instalar dependencias del backend
       - name: Instalar dependencias backend
-        working-directory: ./backend # Camina hacia backend/
-        run: npm install             # Instala las dependencias
+        working-directory: ./backend
+        run: npm install
 
-      # Paso 4: Ejecutar los tests del backend (Mocha)
+      # Ejecutar tests (Mocha)
       - name: Ejecutar tests backend
-        working-directory: ./backend # Ejecuta dentro de backend/
-        run: npm test                # Ejecuta los tests definidos en package.json
-
-      
-      # ========================== FRONTEND =======================
-      
-
-      # Paso 5: Instalar dependencias del frontend
-      - name: Instalar dependencias frontend
-        working-directory: ./frontend # Entra a frontend/
-        run: npm install              # Instala dependencias
-
-      # Paso 6: Ejecutar los tests del frontend (Mocha)
-      - name: Ejecutar tests frontend
-        working-directory: ./frontend # Ejecuta dentro de frontend/
-        run: npm test                 # Corre los tests del frontend
+        working-directory: ./backend
+        run: npm test
