@@ -16,7 +16,8 @@
     "shared"
   ],
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "concurrently": "^9.2.1",
+    "mocha": "^11.7.5"
   },
   "dependencies": {
     "expo-server-sdk": "^4.0.0"
