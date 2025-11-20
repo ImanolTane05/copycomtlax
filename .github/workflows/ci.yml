@@ -4,7 +4,7 @@ name: CI - Tests
 # Cuándo se ejecuta el workflow
 on:
   push:
-    branches: [ notifications ]     # Cuando haces PUSH a la rama notifications
+    branches: [ notification ]     # Cuando haces PUSH a la rama notifications
   pull_request:
     branches: [ main ]              # Cuando haces un PR hacia la rama main
 
