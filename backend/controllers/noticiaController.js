@@ -1,4 +1,7 @@
 const Noticia=require('../models/Noticia');
+// Importar el servicio de envío de notificaciones push
+const pushService = require('../utils/pushService'); 
+const Notificacion = require('../models/Notificacion');
 
 // Crear noticia (requiere token admin o ayudante)
 const crearNoticia=async(req,res) => {
@@ -12,6 +15,23 @@ const crearNoticia=async(req,res) => {
             editedDate:req.body.editedDate
         });
         await noticia.save();
+
+        //  Crear notificación EN MONGO (no se modifica ningún comentario tuyo)
+        await Notificacion.create({
+            titulo: "Nueva Noticia",
+            descripcion: noticia.title,
+            tipo: "Noticia",
+            linkId: noticia._id
+        });
+
+        // Lógica de Notificación Push para CREACIÓN
+        pushService.sendPushNotification(
+            '¡Nueva Noticia!', // Título visible
+            noticia.title,     // Cuerpo visible
+            { type: 'noticia', id: noticia._id.toString(), action: 'created' }, // Payload de datos
+            false // Notificación visible
+        );
+
         res.status(201).json(noticia);
     } catch (e) {
         console.error('Error al crear Noticia: ',e);
@@ -74,19 +94,32 @@ const actualizarNoticia=async(req,res)=>{
 
 const eliminarNoticia=async(req,res)=>{
     try {
-        Noticia.findByIdAndDelete(req.params.id).then((data)=>{
-            if(!data) {
-                res.status(404).send({
-                    message:`404 No se encontró noticia a eliminar.`
-                });
-            } else {
-                res.send({
-                    message:"Noticia eliminada exitosamente"
-                })
-            }
-        })
+        // Usamos findByIdAndDelete para obtener el resultado de la operación
+        const noticiaEliminada = await Noticia.findByIdAndDelete(req.params.id);
+
+        if(!noticiaEliminada) {
+            // No se encontró la noticia a eliminar
+            res.status(404).send({
+                message:`404 No se encontró noticia a eliminar.`
+            });
+        } else {
+            
+            // Lógica de Notificación Push para ELIMINACIÓN
+            // Se envía una notificación silenciosa con la acción 'deleted'
+            pushService.sendPushNotification(
+                null,
+                null,
+                { type: 'noticia', id: req.params.id, action: 'deleted' }, // Payload de datos
+                true // Notificación silenciosa
+            );
+            
+            // Si la eliminación fue exitosa
+            res.send({
+                message:"Noticia eliminada exitosamente"
+            })
+        }
     } catch (e) {
-        console.error('Error al consultar Noticia: ',e);
+        console.error('Error al eliminar Noticia: ',e);
         res.status(500).json({mensaje:'Error al eliminar noticia.'})
     }
 }

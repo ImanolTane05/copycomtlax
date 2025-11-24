@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start":"node index.js",
-    "dev":"nodemon index.js",
+    "start": "node index.js",
+    "dev": "nodemon index.js",
     "test": "mocha"
   },
   "keywords": [],
@@ -26,6 +26,7 @@
     "shared": "file:../shared"
   },
   "devDependencies": {
+    "mocha": "^11.7.5",
     "nodemon": "^3.1.10"
   }
 }

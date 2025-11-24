@@ -1,0 +1,40 @@
+# Nombre del workflow visible en GitHub Actions
+name: CI - Tests Backend Only
+
+# Cuándo se ejecuta el workflow
+on:
+  push:
+    branches: [ notification ]     # Tu rama de desarrollo
+  pull_request:
+    branches: [ main ]             # Tus PR hacia producción
+
+jobs:
+  test-backend:
+    # Máquina donde se ejecutará
+    runs-on: ubuntu-latest
+
+    steps:
+      # Descargar el repo
+      - name: Descargar repo
+        uses: actions/checkout@v4
+
+      # Instalar Node.js
+      - name: Usar Node 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      # ====================
+      #      BACKEND 
+      # ====================
+
+      # Instalar dependencias del backend
+      - name: Instalar dependencias backend
+        working-directory: ./backend
+        run: npm install
+
+      # Ejecutar tests (Mocha)
+      - name: Ejecutar tests backend
+        working-directory: ./backend
+        run: npm test

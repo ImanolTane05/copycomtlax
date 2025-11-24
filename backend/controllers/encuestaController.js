@@ -1,6 +1,9 @@
 const Encuesta = require("../models/Encuesta");
 const Respuesta = require('../models/Respuesta');
 const { genAI } = require('../geminiConfig');
+// Importar el servicio de envío de notificaciones push
+const pushService = require('../utils/pushService');
+const Notificacion = require('../models/Notificacion');
 
 // Función auxiliar para verificar y actualizar el estado de la encuesta
 const verificarCierreProgramado = async (encuesta) => {
@@ -24,6 +27,23 @@ const crearEncuesta = async (req, res) => {
             fechaCierre: fechaCierre || null,
         });
         const encuestaGuardada = await nuevaEncuesta.save();
+
+        // Crear notificación EN BASE DE DATOS (Mongo)
+        await Notificacion.create({
+            titulo: "Nueva Encuesta",
+            descripcion: encuestaGuardada.titulo,
+            tipo: "Encuesta",
+            linkId: encuestaGuardada._id
+        });
+
+        // Lógica de Notificación Push para CREACIÓN
+        pushService.sendPushNotification(
+            '¡Nueva Encuesta Disponible!', 
+            encuestaGuardada.titulo,     
+            { type: 'encuesta', id: encuestaGuardada._id.toString(), action: 'created' }, 
+            false 
+        );
+
         res.status(201).json(encuestaGuardada);
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -42,7 +62,6 @@ const obtenerEncuestasAdmin = async (req, res) => {
                 const preguntasConResumen = await Promise.all(
                     encuesta.preguntas.map(async (pregunta) => {
                         if (pregunta.tipo === 'Abierta') {
-                            // Por defecto, no cargamos el resumen aquí, sino a demanda.
                             return { ...pregunta.toObject(), resumen: null }; 
                         } else if (pregunta.tipo === 'Opción múltiple') {
                             const respuestas = await Respuesta.aggregate([
@@ -58,7 +77,7 @@ const obtenerEncuestasAdmin = async (req, res) => {
                                 ...pregunta.toObject(),
                                 resumen,
                             };
-                        } else { // Otros tipos (e.g., única)
+                        } else {
                             const respuestas = await Respuesta.aggregate([
                                 { $match: { encuestaId: encuesta._id, preguntaId: pregunta._id } },
                                 { $group: { _id: '$respuesta', count: { $sum: 1 } } },
@@ -132,8 +151,21 @@ const actualizarEncuesta = async (req, res) => {
 const eliminarEncuesta = async (req, res) => {
     try {
         const encuestaId = req.params.id;
-        await Encuesta.findByIdAndDelete(encuestaId);
+        const encuestaEliminada = await Encuesta.findByIdAndDelete(encuestaId);
+        
+        if (!encuestaEliminada) {
+            return res.status(404).json({ error: "Encuesta no encontrada" });
+        }
+        
         await Respuesta.deleteMany({ encuestaId });
+
+        pushService.sendPushNotification(
+            null,
+            null,
+            { type: 'encuesta', id: encuestaId, action: 'deleted' },
+            true 
+        );
+
         res.json({ mensaje: "Encuesta y respuestas eliminadas correctamente" });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -193,7 +225,6 @@ const obtenerResumenRespuestasAbiertas = async (req, res) => {
 
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); 
         
-        // --- INICIO DEL PROMPT MEJORADO ---
         const prompt = `
 Eres un analista experto en datos cualitativos de encuestas. Tu tarea es procesar las respuestas abiertas proporcionadas a continuación para extraer información clave de manera concisa, clara y objetiva.
 
@@ -215,24 +246,19 @@ Responde en formato JSON con las siguientes propiedades:
 - "temas_emergentes": Un array de **cinco (5)** puntos de análisis. Cada punto debe ser una frase que describa un tema o idea principal recurrente y significativo encontrado en las respuestas.
 - "citas_representativas": Un array de **tres (3)** citas textuales (frases exactas de las respuestas) que sirvan como la mejor evidencia o ejemplo para ilustrar los temas emergentes.
 `;
-        // --- FIN DEL PROMPT MEJORADO ---
         
-        // Nota: Se ha eliminado el prompt duplicado y redundante que estaba debajo.
-
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const text = response.text();
 
-        // Esta lógica de extracción de JSON es crucial, ya que el modelo a veces devuelve texto antes o después del JSON.
         const jsonMatch = text.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
             const resumenGemini = JSON.parse(jsonMatch[0]);
             res.json(resumenGemini);
         } else {
-            // Si el modelo falla en generar un JSON, intenta devolver el texto crudo para depuración o un error.
             res.status(500).json({ 
                 error: "No se pudo obtener un resumen válido de Gemini.",
-                rawResponse: text // Opcional: útil para depuración
+                rawResponse: text 
             });
         }
 
