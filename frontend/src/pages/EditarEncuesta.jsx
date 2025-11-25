@@ -70,7 +70,7 @@ const EditarEncuesta = () => {
     mutationFn: async (encuestaActualizada) => {
       const token = localStorage.getItem('token');
       return axios.put(
-        `http://localhost:5000/api/encuestas/${id}`,
+        `h${import.meta.env.VITE_BASE_URL}/encuestas/${id}`,
         encuestaActualizada,
         {
           headers: { Authorization: `Bearer ${token}` },

@@ -52,7 +52,7 @@ const NuevaNoticia=()=> {
                 ? { headers: { Authorization: `Bearer ${token}` } }
                 : {};
             const body=JSON.stringify(editorContent);
-            const response=await axios.post("http://localhost:5000/api/noticias/crear",{
+            const response=await axios.post(`${import.meta.env.VITE_BASE_URL}/noticias/crear`,{
                     title:data.title,
                     lead:data.lead,
                     headerPic:headerPic,

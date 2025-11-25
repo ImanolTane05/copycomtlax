@@ -20,7 +20,7 @@ const Noticia=()=> {
     useEffect(()=>{
         const fetchArticle=async()=>{
             try {
-                const res=await axios.get(`http://localhost:5000/api/noticias/${id}`)
+                const res=await axios.get(`${import.meta.env.VITE_BASE_URL}/noticias/${id}`)
                 setArticle(res.data);
             } catch (err) {
                 setError("Error al recuperar el artículo.");
@@ -33,7 +33,7 @@ const Noticia=()=> {
     },[id]);
 
     useEffect(()=>{
-        axios.get('http://localhost:5000/api/noticias/')
+        axios.get(`${import.meta.env.VITE_BASE_URL}/noticias/`)
           .then(res=>setNoticias(res.data))
           .catch(err=>console.log("Error al cargar noticias:",err));
     },[]);

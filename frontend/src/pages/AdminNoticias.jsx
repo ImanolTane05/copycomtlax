@@ -13,7 +13,7 @@ const AdminNoticias=()=>{
     const [modal,showModal]=useModal();
 
     const fetchNoticias=()=>{
-        axios.get('http://localhost:5000/api/noticias/')
+        axios.get(`${import.meta.env.VITE_BASE_URL}/noticias/`)
           .then(res=>setNoticias(res.data))
           .catch(err=>setError(err));
     }

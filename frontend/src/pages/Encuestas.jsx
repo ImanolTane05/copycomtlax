@@ -12,7 +12,7 @@ const Encuestas = () => {
     // Cargar las encuestas al iniciar el componente
     useEffect(() => {
         axios
-            .get('http://localhost:5000/api/encuestas')
+            .get(`${import.meta.env.VITE_BASE_URL}/encuestas`)
             .then((res) => setEncuestas(res.data))
             .catch((err) => {
                 console.error('Error al cargar encuestas:', err);
@@ -109,20 +109,36 @@ const Encuestas = () => {
                                             pregunta.opciones.map((opcion, idx) => (
                                                 <label
                                                     key={idx}
-                                                    className="block cursor-pointer mb-2 text-gray-700 hover:text-blue-600 transition"
+                                                    className={
+                                                        pregunta.tipo==='Cerrada' ?
+                                                            "block cursor-pointer mb-2 text-gray-700 hover:text-blue-600 transition"
+                                                        :
+                                                            "inline-flex mb-2 text-gray-700 hover:text-blue-600 items-center cursor-pointer transition"
+                                                    }
                                                 >
                                                     <input
-                                                        type="radio"
+                                                        type={pregunta.tipo==='Cerrada' ? "radio" : "checkbox"}
                                                         name={pregunta._id}
                                                         value={opcion}
                                                         checked={respuestas[encuesta._id]?.[pregunta._id] === opcion}
                                                         onChange={(e) =>
                                                             handleChange(encuesta._id, pregunta._id, e.target.value)
                                                         }
-                                                        className="mr-3 accent-blue-600"
+                                                        className={
+                                                            pregunta.tipo==='Cerrada' ?
+                                                                "mr-3 accent-blue-600"
+                                                            :
+                                                                'sr-only peer'
+                                                        }
                                                         required
                                                         disabled={encuesta.cerrada}
                                                     />
+                                                    {pregunta.tipo==='Opción múltiple' && 
+                                                    <div className='w-3 h-3 mr-3 border border-gray-300 rounded peer-checked:bg-blue-600 peer-checked:border-blue-600'>
+                                                        <svg className='hidden w-2 h-2 text-white peer-checked:block' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                                                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M5 13l4 4L19 7'></path>
+                                                        </svg>
+                                                    </div>}
                                                     {opcion}
                                                 </label>
                                             ))

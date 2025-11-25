@@ -29,7 +29,7 @@ const AppWrapper = () => {
   const [message,setMessage]=useState("Cargando...");
 
   useEffect(()=>{
-    axios.get("http://localhost:5000"
+    axios.get(import.meta.env.VITE_BACKEND_URL
     ).then((res)=>{
       setMessage(res.data);
       console.log("Data:",res.data);

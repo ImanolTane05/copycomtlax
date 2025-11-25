@@ -3,7 +3,6 @@ import axios from 'axios';
 import ArticleCard from '../components/ArticleCard';
 import ContactCard from '../components/contactCard';
 
-
 const LocalFooter = ({ children }) => {
   return(
     <footer className='bg-gray-800 text-white py-5 px-10 w-full mt-10'>
@@ -17,7 +16,7 @@ const Visitor = () => {
   const [noticias,setNoticias]=useState();
 
   useEffect(()=>{
-    axios.get('http://localhost:5000/api/noticias/')
+    axios.get(`${import.meta.env.VITE_BASE_URL}/noticias/`)
       .then(res=>setNoticias(res.data))
       .catch(err=>console.log("Error al cargar noticias:",err));
   },[]);
