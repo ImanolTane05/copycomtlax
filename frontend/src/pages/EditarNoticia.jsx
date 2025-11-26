@@ -37,7 +37,7 @@ const EditarNoticia=()=> {
     useEffect(()=>{
         const fetchOldContent=async()=>{
             try {
-                const res=await axios.get(`http://localhost:5000/api/noticias/${id}`);
+                const res=await axios.get(`${import.meta.env.VITE_BASE_URL}/noticias/${id}`);
                 setOldContent(res.data);
                 setTitle(res.data.title);
                 if (res.data.lead) {setLead(res.data.lead)};
