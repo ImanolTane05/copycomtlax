@@ -2,6 +2,10 @@
 
 Los cambios realizados en el proyecto se registrarán en este archivo.
 
+## [2025.11.27.1]
+* Movido paquete expo-server-sdk a backend en vez de en raíz
+* Creados comandos para ejecutar previews del entorno de producción del frontend
+
 ## [2025.11.25.1]
 * Eliminadas importaciones no utilizadas en componentes del editor de texto
 * Cambiadas direcciones del backend utilizadas en el frontend por una variable de entorno
