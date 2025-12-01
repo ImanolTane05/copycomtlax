@@ -49,13 +49,27 @@ const Noticia=()=> {
         return <div>404 - No se encontró el artículo</div>
     }
 
+    function getFormattedDate (date) {
+        return new Date(date).toLocaleDateString('es-ES',{
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+            hour:'2-digit',
+            minute:'2-digit',
+            hour12:'true'
+        });
+    }
+
     return (
         <div className="flex flex-col m-5">
             <article>
                 <header className="flex flex-col">
-                    <h1 className="text-center font-bold text-3xl">{article.title}</h1>
+                    <p className="text-center font-bold text-4xl pb-5 mb-10">{article.title}</p>
+                    <p className="font-[14px] text-[#999] mb-5 border-b border-b-[#eee] pb-10">
+                        Publicado el {article.publishedDate && getFormattedDate(article.publishedDate)} {article.publishedDate!==article.editedDate && `(Editado ${getFormattedDate(article.editedDate)})`}
+                    </p>
                     <br/>
-                    <p className="whitespace-pre-wrap text-justify my-5">{article.lead}</p>
+                    <p className="font-semibold text-[#333] border-l-4 border-l-[#00A859] whitespace-pre-wrap text-justify pl-10 my-5">{article.lead}</p>
                     {
                         article.headerPic &&
                             <img 

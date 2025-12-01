@@ -91,7 +91,7 @@ const NuevaNoticia=()=> {
                             console.log("Title: ",title);
                         }}
                         type="text" 
-                        className="w-[100%] border-[1px] p-1 border-black rounded-lg"
+                        className="w-full border p-1 border-black rounded-lg"
                         {...register('title',{
                             required:"El título es obligatorio"
                         })}
@@ -103,7 +103,7 @@ const NuevaNoticia=()=> {
                     <textarea 
                         id="lead"
                         onChange={(e)=>setLead(e.target.value)}
-                        className="w-[100%] border-[1px] border-black p-1 rounded-lg px-1"
+                        className="w-full border border-black p-1 rounded-lg px-1"
                         {...register('lead')}
                     />
                 </div>
@@ -118,7 +118,7 @@ const NuevaNoticia=()=> {
                         id="headingImg"
                         type="file" 
                         accept="image/*"
-                        className="[display:none]"
+                        className="hidden"
                         {...register('headerPic',{
                             onChange:(e)=>{if (e.target.files[0]) {handleSetHeading(e.target.files)}}
                         })}

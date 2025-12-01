@@ -2,6 +2,12 @@
 
 Los cambios realizados en el proyecto se registrarán en este archivo.
 
+## [2025.12.1.1]
+* Añadidas las fechas de publicación y edición en los detalles de una noticia
+* Modificado el diseño del texto de introducción en detalles de noticia para consistencia con la app móvil
+* Modificadas tarjetas de noticias para limitar la cantidad de renglones del texto introductorio a 3, y colocar elipsis cuando el texto supere el límite (vía webkit)
+* Actualizadas sintaxis de classNames en varias páginas y componentes a las recomendadas por Tailwind 4
+
 ## [2025.11.27.1]
 * Movido paquete expo-server-sdk a backend en vez de en raíz
 * Creados comandos para ejecutar previews del entorno de producción del frontend

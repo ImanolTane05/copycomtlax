@@ -87,7 +87,7 @@ const EditarNoticia=()=> {
             } else {
                 body=JSON.stringify(editorContent);
             }
-            const response=await axios.put(`http://localhost:5000/api/noticias/${id}`,{
+            const response=await axios.put(`${import.meta.env.VITE_BASE_URL}/noticias/${id}`,{
                     title:data.title,
                     lead:data.lead,
                     headerPic:removeHeader||headerPic=='' ? '' : headerPic,
@@ -133,7 +133,7 @@ const EditarNoticia=()=> {
                         id="title"
                         onChange={(e)=>{setTitle(e.target.value)}}
                         type="text" 
-                        className="w-[100%] border-[1px] p-1 border-black rounded-lg"
+                        className="w-full border p-1 border-black rounded-lg"
                         defaultValue={title}
                         {...register('title',{
                             required:"El título es obligatorio"
@@ -146,7 +146,7 @@ const EditarNoticia=()=> {
                     <textarea 
                         id="lead"
                         onChange={(e)=>setLead(e.target.value)}
-                        className="w-[100%] border-[1px] border-black p-1 rounded-lg"
+                        className="w-full border border-black p-1 rounded-lg"
                         defaultValue={lead}
                         {...register('lead')}
                     />
@@ -163,7 +163,7 @@ const EditarNoticia=()=> {
                         id="headingImg"
                         type="file" 
                         accept="image/*"
-                        className="[display:none]"
+                        className="hidden"
                         {...register('headerPic',{
                             onChange:(e)=>{if (e.target.files[0]) {handleSetHeading(e.target.files)}}
                         })}

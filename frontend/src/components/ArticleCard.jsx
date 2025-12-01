@@ -30,7 +30,7 @@ export default function ArticleCard({
                 <h2 className="text-2xl font-bold">
                     {title ?? "Título de artículo"}
                 </h2>
-                <p className="text-justify h-auto min-w-[100px] w-11/12">
+                <p className="whitespace-pre-line overflow-hidden text-ellipsis [display:-webkit-box] [-webkit-line-clamp:3] [-webkit-box-orient:vertical] text-justify h-auto min-w-[100px] w-11/12">
                     {lead}
                 </p>
             </div>

@@ -19,10 +19,10 @@ const Navbar = () => {
   return (
     <div className="flex justify-between items-center p-4">
       {/* Contenedor principal del navbar en forma de "pastilla" */}
-      <div className="flex-grow flex justify-center">
+      <div className="grow flex justify-center">
         <div className="bg-white rounded-full border-2 border-gray-800 shadow-xl p-2 md:p-3 flex items-center justify-center space-x-2 md:space-x-4">
           <Link to={'/'}>
-            <img src="/logo/no-text192.png" alt="Logo CoPyComTlax" className='size-[48px] hover:bg-gray-200/50 rounded-full transition-colors active:bg-gray-400/50'/>
+            <img src="/logo/no-text192.png" alt="Logo CoPyComTlax" className='size-12 hover:bg-gray-200/50 rounded-full transition-colors active:bg-gray-400/50'/>
           </Link>
           <button
             onClick={() => navigate('/encuestas')}

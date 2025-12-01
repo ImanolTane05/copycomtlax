@@ -60,7 +60,7 @@ const Encuestas = () => {
         }));
 
         try {
-            await axios.post(`http://localhost:5000/api/encuestas/${encuestaId}/responder`, {
+            await axios.post(`${import.meta.env.VITE_BASE_URL}/encuestas/${encuestaId}/responder`, {
                 respuestas: respuestasArray,
                 usuarioId: null, // Asumiendo que el usuario no está logueado
             });

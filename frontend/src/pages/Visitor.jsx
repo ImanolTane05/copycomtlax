@@ -43,7 +43,7 @@ const Visitor = () => {
                 }
               </div>
             : 
-              <div className='grid grid-cols-[(3,1fr)] gap-[10px] my-10'>
+              <div className='grid grid-cols-[(3,1fr)] gap-2.5 my-10'>
                 <div>
                   <img src="no_content.png" width={256} className='opacity-50 inline-block'/>
                 </div>
