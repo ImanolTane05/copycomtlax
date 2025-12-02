@@ -2,6 +2,10 @@ import React, { useEffect,useState } from 'react';
 import axios from 'axios';
 import ArticleCard from '../components/ArticleCard';
 import ContactCard from '../components/contactCard';
+import { FaSpinner } from "react-icons/fa";
+import { MdOutlineError,MdCloudOff } from "react-icons/md";
+import { TbReload } from "react-icons/tb";
+import ActionButton from '../components/ActionButton';
 
 const LocalFooter = ({ children }) => {
   return(
@@ -14,13 +18,45 @@ const LocalFooter = ({ children }) => {
 }
 const Visitor = () => {
   const [noticias,setNoticias]=useState();
+  const [error,setError]=useState(null);
+  const [isLoading,setIsLoading]=useState(true);
 
   useEffect(()=>{
     axios.get(`${import.meta.env.VITE_BASE_URL}/noticias/`)
       .then(res=>setNoticias(res.data))
-      .catch(err=>console.log("Error al cargar noticias:",err));
+      .catch(err=>setError(err))
+      .finally(setIsLoading(false));
   },[]);
   
+  if (isLoading) {
+    return <FaSpinner className="loading-icon" size={"15%"} color='#777'/>
+  }
+
+  if (error) {
+    return <div className="text-gray-400 absolute top-[50%] left-[50%] transform-[translate(-50%,-50%)]">
+      {
+        error.code==='ERR_NETWORK' ? 
+          <MdCloudOff size={"15%"} color='#777' className='justify-center mx-auto'/>
+        :
+          <MdOutlineError size={"15%"} color='#777' className='justify-center mx-auto'/>
+      }
+      <p className='mx-auto text-center'>
+        {error.code==='ERR_NETWORK' ? "Ocurrió un problema de conexión. Intenta recargar." : "Error al recuperar noticias."}
+      </p>
+      <ActionButton 
+        color={"bg-red-600"} 
+        hoverColor={"bg-red-700"}
+        activeColor={"bg-red-800"}
+        style={"mx-auto"}
+        onClick={(e)=>{
+          e.preventDefault();
+          window.location.reload();
+        }}
+      >
+        <TbReload/> Reintentar
+      </ActionButton>
+    </div>
+  }
 
   return (
     <div className='flex flex-col min-h-screen'>

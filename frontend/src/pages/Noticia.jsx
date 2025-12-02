@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import ArticleCard from "../components/ArticleCard";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { FaSpinner } from "react-icons/fa";
 
 import ViewContent from "../components/ViewContent";
 
@@ -39,14 +40,14 @@ const Noticia=()=> {
     },[]);
 
     if (isLoading) {
-        return <>Cargando...</>
+        return <FaSpinner className="loading-icon"/>
     }
 
     if (error) {
-        return <>{error.message}</>
+        return <div className="absolute top-[50%] left-[50%] transform-[translate(-50%,-50%)]">Error al recuperar el artículo</div>
     }
     if (!article) {
-        return <div>404 - No se encontró el artículo</div>
+        return <div className="absolute top-[50%] left-[50%] transform-[translate(-50%,-50%)]">No se encontró el artículo</div>
     }
 
     function getFormattedDate (date) {

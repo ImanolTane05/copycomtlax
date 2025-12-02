@@ -2,6 +2,10 @@
 
 Los cambios realizados en el proyecto se registrarán en este archivo.
 
+## [2025.12.1.2]
+* Creado el estilo para un icono de carga (de momento solo utilizado en el módulo de noticias)
+* Creado un componente de botón para luego homogeneizar el estilo de botones de acción en la página
+
 ## [2025.12.1.1]
 * Añadidas las fechas de publicación y edición en los detalles de una noticia
 * Modificado el diseño del texto de introducción en detalles de noticia para consistencia con la app móvil
