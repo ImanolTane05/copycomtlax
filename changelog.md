@@ -2,8 +2,13 @@
 
 Los cambios realizados en el proyecto se registrarán en este archivo.
 
+## [2025.12.2.1]
+* Creado un componente para mostrar que ocurrió un error para una consulta según si el error recibido es de conexión u de otro tipo. Aplicado en todas las páginas que requieran una consulta para mostrarse correctamente.
+* El ícono de usuario en la pantalla principal ya no se muestra cuando no hay una sesión activa.
+* Cambiado diseño de las tarjetas de noticia, del cuerpo de crear/editar noticia y del editor de texto para consistencia con el resto de la página.
+
 ## [2025.12.1.2]
-* Creado el estilo para un icono de carga (de momento solo utilizado en el módulo de noticias)
+* Creado el estilo para un ícono de carga (de momento solo utilizado en el módulo de noticias)
 * Creado un componente de botón para luego homogeneizar el estilo de botones de acción en la página
 
 ## [2025.12.1.1]

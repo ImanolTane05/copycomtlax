@@ -17,7 +17,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className="flex justify-between items-center p-4">
+    <div className="flex justify-between items-center p-4 sticky top-0 z-999">
       {/* Contenedor principal del navbar en forma de "pastilla" */}
       <div className="grow flex justify-center">
         <div className="bg-white rounded-full border-2 border-gray-800 shadow-xl p-2 md:p-3 flex items-center justify-center space-x-2 md:space-x-4">
@@ -75,7 +75,7 @@ const Navbar = () => {
         </div>
       </div>
       
-      {!isAdmin && (
+      {token&&!isAdmin && (
         <div className="p-2 border border-gray-800 rounded-full">
           <FaUser className="h-4 w-4 text-gray-800" />
         </div>

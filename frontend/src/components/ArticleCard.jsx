@@ -14,7 +14,7 @@ export default function ArticleCard({
     }
 
     return(
-        <div key={id} id={id} className="hover:scale-105 transition-transform border shadow-lg rounded-lg bg-slate-100 cursor-pointer min-w-52"
+        <div key={id} id={id} className="hover:scale-105 transition-transform shadow-2xl rounded-lg bg-gray-100 cursor-pointer min-w-52"
         onClick={handleClick}
         >
             {image ?

@@ -12,9 +12,8 @@ import {
   FaLock,
   FaUnlock,
   FaSpinner,
-  FaChevronDown,
-  FaChevronUp,
 } from 'react-icons/fa';
+import ErrorMessage from '../components/ErrorMessage';
 
 /**
  * Componente principal para editar una encuesta existente.
@@ -285,19 +284,9 @@ const EditarEncuesta = () => {
 
 
   if (isLoading)
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-white text-gray-800">
-        <p className="text-xl animate-pulse">Cargando encuesta...</p>
-      </div>
-    );
+    return <FaSpinner className="loading-icon"/>
   if (isError)
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-white text-gray-800">
-        <p className="text-red-600 text-xl text-center">
-          Error al cargar la encuesta: {error.message}
-        </p>
-      </div>
-    );
+    return (<ErrorMessage error={error} message={"Error al recuperar los detalles de la encuesta."}/>);
 
   return (
     <div className="min-h-screen bg-white p-4 sm:p-6 text-gray-800 flex justify-center font-sans antialiased">

@@ -3,11 +3,14 @@ import { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useModal from "../components/RichTextEditor/hooks/useModal";
 import { Link } from "react-router-dom";
+import ErrorMessage from "../components/ErrorMessage";
+import { FaSpinner } from "react-icons/fa";
 
 const AdminNoticias=()=>{
     const navigate=useNavigate();
 
     const [noticias,setNoticias]=useState([]);
+    const [loading,setLoading]=useState(true);
     const [error,setError]=useState(null);
 
     const [modal,showModal]=useModal();
@@ -15,19 +18,20 @@ const AdminNoticias=()=>{
     const fetchNoticias=()=>{
         axios.get(`${import.meta.env.VITE_BASE_URL}/noticias/`)
           .then(res=>setNoticias(res.data))
-          .catch(err=>setError(err));
+          .catch(err=>setError(err))
+          .finally(setLoading(false));
     }
 
     useEffect(()=>{
         fetchNoticias();
     },[]);
     
+    if (loading) {
+        return <FaSpinner className="loading-icon"/>
+    }
+
     if (error) {
-        return (
-            <>
-                Error al recuperar noticias.
-            </>
-        )
+        return <ErrorMessage error={error} message={"Error al recuperar noticias."}/>
     }
     
     return (
@@ -44,7 +48,7 @@ const AdminNoticias=()=>{
                         noticias.map((noticia)=> (
                             <div 
                                 key={noticia._id} id={noticia._id} 
-                                className="transition-transform border shadow-lg rounded-lg bg-slate-100 min-w-52 relative"
+                                className="transition-transform shadow-2xl rounded-lg bg-gray-100 min-w-52 relative"
                             >
                                 { noticia.headerPic ?
                                 <div className="overflow-hidden max-w-[95%] m-auto pt-2">

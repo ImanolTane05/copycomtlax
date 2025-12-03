@@ -7,6 +7,7 @@ import { FaSpinner } from "react-icons/fa";
 import ViewContent from "../components/ViewContent";
 
 import "../App.css";
+import ErrorMessage from "../components/ErrorMessage";
 
 const Noticia=()=> {
     const {id}=useParams();
@@ -24,8 +25,7 @@ const Noticia=()=> {
                 const res=await axios.get(`${import.meta.env.VITE_BASE_URL}/noticias/${id}`)
                 setArticle(res.data);
             } catch (err) {
-                setError("Error al recuperar el artículo.");
-                console.error(err);
+                setError(err);
             } finally {
                 setIsLoading(false);
             }
@@ -42,12 +42,11 @@ const Noticia=()=> {
     if (isLoading) {
         return <FaSpinner className="loading-icon"/>
     }
-
     if (error) {
-        return <div className="absolute top-[50%] left-[50%] transform-[translate(-50%,-50%)]">Error al recuperar el artículo</div>
+        return <ErrorMessage error={error} message={"Error al recuperar la noticia."}/>
     }
     if (!article) {
-        return <div className="absolute top-[50%] left-[50%] transform-[translate(-50%,-50%)]">No se encontró el artículo</div>
+        return <div className="absolute top-[50%] left-[50%] transform-[translate(-50%,-50%)]">No se encontró la noticia.</div>
     }
 
     function getFormattedDate (date) {

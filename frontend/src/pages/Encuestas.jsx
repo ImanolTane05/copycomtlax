@@ -2,12 +2,15 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
-import { FaPaperPlane } from 'react-icons/fa'; // Icono para el botón de envío
+import { FaPaperPlane, FaSpinner } from 'react-icons/fa'; // Icono para el botón de envío
+import ErrorMessage from '../components/ErrorMessage';
 
 const Encuestas = () => {
     const [encuestas, setEncuestas] = useState([]);
     // Estado para guardar las respuestas de cada encuesta y pregunta
     const [respuestas, setRespuestas] = useState({});
+    const [error,setError]=useState(null);
+    const [loading,setLoading]=useState(true);
 
     // Cargar las encuestas al iniciar el componente
     useEffect(() => {
@@ -15,9 +18,10 @@ const Encuestas = () => {
             .get(`${import.meta.env.VITE_BASE_URL}/encuestas`)
             .then((res) => setEncuestas(res.data))
             .catch((err) => {
-                console.error('Error al cargar encuestas:', err);
                 toast.error('Error al cargar las encuestas disponibles.');
-            });
+                setError(err);
+            })
+            .finally(setLoading(false));
     }, []);
 
     // Manejar el cambio en los inputs (radio y textarea)
@@ -76,6 +80,13 @@ const Encuestas = () => {
             console.error(err);
         }
     };
+
+    if (loading) {
+        return <FaSpinner className="loading-icon"/>
+    }
+    if (error) {
+        return <ErrorMessage error={error} message={"Error al recuperar encuestas."}/>
+    }
 
     return (
         <div className="min-h-screen bg-white p-4 sm:p-8 text-gray-800 font-inter pt-24">

@@ -77,12 +77,12 @@ const NuevaNoticia=()=> {
     }
     
     return (
-        <div className="grid-cols-subgrid m-5">
-            <h1 className="text-3xl sm:text-4xl font-extrabold mb-6 text-center text-gray-900">
-                Creando noticia...
+        <div className="grid-cols-subgrid m-5 bg-gray-100 rounded-xl shadow-2xl relative text-center">
+            <h1 className="text-3xl sm:text-4xl font-extrabold mb-6 text-center text-gray-900 pt-6">
+                Crear noticia
             </h1>
-            <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
-                <label htmlFor="title">Título</label>
+            <form className="space-y-5 mx-5" onSubmit={handleSubmit(onSubmit)}>
+                <label htmlFor="title" className="text-2xl font-semibold">Título</label>
                 <div className="pb-2 mx-">
                     <input 
                         id="title"
@@ -91,26 +91,26 @@ const NuevaNoticia=()=> {
                             console.log("Title: ",title);
                         }}
                         type="text" 
-                        className="w-full border p-1 border-black rounded-lg"
+                        className="w-full border p-3 bg-white border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
                         {...register('title',{
                             required:"El título es obligatorio"
                         })}
                     />
                     {errors.title && <div className={styles.error}>{errors.name.message}</div>}
                 </div>
-                <label htmlFor="lead">Introducción</label>
+                <label htmlFor="lead" className="text-2xl font-semibold">Introducción</label>
                 <div className="pb-2">
                     <textarea 
                         id="lead"
                         onChange={(e)=>setLead(e.target.value)}
-                        className="w-full border border-black p-1 rounded-lg px-1"
+                        className="w-full border p-3 bg-white border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
                         {...register('lead')}
                     />
                 </div>
-                <p>Encabezado</p>
+                <p className="text-2xl font-semibold">Encabezado</p>
                 <label 
                     htmlFor="headingImg" 
-                    className="bg-amber-800 hover:bg-amber-700 active:bg-amber-900 w-fit px-2 justify-center text-white p-[5px] mx-auto rounded-md"
+                    className="bg-amber-800 hover:bg-amber-700 active:bg-amber-900 w-fit px-2 justify-center text-white p-[5px] mx-auto rounded-md transition"
                 >
                     Insertar imagen...
                 </label>
@@ -160,7 +160,7 @@ const NuevaNoticia=()=> {
                         {modal}
                     </p>
                 }
-                <label htmlFor="body">Contenido</label>
+                <label htmlFor="body" className="text-2xl font-semibold">Contenido</label>
                 <div className="editorWrapper">
                     <RichTextEditor
                         onEditorStateChange={handleEditorStateChange}
@@ -175,7 +175,7 @@ const NuevaNoticia=()=> {
                 />
                 <button
                     type="submit"
-                    className="bg-blue-900 hover:bg-blue-800 active:bg-blue-950 transition-transform text-white p-2 rounded-lg"
+                    className="bg-blue-900 hover:bg-blue-800 active:bg-blue-950 transition-transform text-white p-2 inline-block w-[60%] md:w-[80%] sm:w-full rounded-lg mb-5 text-2xl font-semibold"
                 >
                         Subir
                 </button>

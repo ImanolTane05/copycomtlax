@@ -112,9 +112,9 @@ export default function RichTextEditor({
 
     return (
         <LexicalComposer initialConfig={initialConfig}>
-            <div className="editor-shell border-black border-[1px] rounded-md">
+            <div className="editor-shell rounded-md border-collapse">
                 <ToolbarPlugin/>
-                <div className="editor-container tree-view">
+                <div className="editor-container tree-view border border-gray-300 -mt-0.5">
                     <ClearEditorPlugin/>
                     <InlineImagePlugin/>
                     <CheckListPlugin/>
