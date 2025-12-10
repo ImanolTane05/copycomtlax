@@ -1,0 +1,52 @@
+groups:
+- name: backend_critical_alerts
+  rules:
+  
+  # 1. Alerta Crítica: El Backend está Caído
+  # Se dispara si Prometheus no puede acceder al endpoint /metrics (localhost:5000) por más de 1 minuto.
+  - alert: BackendDown
+    expr: up{job="backend_copycomtlax"} == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: '¡El backend de CoPyComTlax está caído! 🔴'
+      description: 'El job de Prometheus "backend_copycomtlax" ha estado inactivo (DOWN) por más de 1 minuto. El servidor Express en localhost:5000 no responde.'
+
+  # 2. Alerta Crítica: Alta Tasa de Errores HTTP 5xx
+  # Se dispara si más del 5% de todas las peticiones son errores 5xx durante 5 minutos consecutivos.
+  - alert: HighBackendErrorRate
+    # Calcula la proporción de peticiones 5xx sobre el total de peticiones.
+    expr: sum(rate(http_requests_total{job="backend_copycomtlax", status_code=~"5.."}[5m])) / sum(rate(http_requests_total{job="backend_copycomtlax"}[5m])) > 0.05
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: 'Tasa de Error Crítica en el Backend'
+      description: 'Se detectó una tasa de {{ $value | humanizePercentage }} de errores HTTP 5xx en los últimos 5 minutos. Esto indica problemas en el servidor (código, base de datos, lógica).'
+
+- name: backend_performance_alerts
+  rules:
+  
+  # 3. Alerta de Advertencia: Alto Lag en el Event Loop
+  # Se dispara si el percentil 99 (p99) del lag del Event Loop supera los 10ms (0.01s) por 2 minutos. 
+  # Esto indica que el servidor está sobrecargado y las peticiones se retrasan.
+  - alert: HighEventLoopLag
+    expr: node_app_nodejs_eventloop_lag_p99_seconds{job="backend_copycomtlax"} > 0.01
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: 'Alto Lag en Event Loop (Rendimiento Lento)'
+      description: 'El 99% de las tareas del Event Loop están tardando más de 10ms (actual: {{ $value | humanizeDuration }}). El servidor Node.js está lento o bloqueado.'
+
+  # 4. Alerta de Advertencia: Uso Elevado de Memoria
+  # Se dispara si la memoria residente utilizada por el proceso de Node.js supera los 200MB (suficiente para un entorno de desarrollo) por 10 minutos.
+  - alert: HighMemoryUsage
+    expr: node_app_process_resident_memory_bytes{job="backend_copycomtlax"} > 200000000 
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: 'Uso de Memoria Elevado'
+      description: 'La memoria residente (RSS) del backend es {{ $value | humanize }} (más de 200MB). Puede haber una fuga de memoria.'
