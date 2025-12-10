@@ -173,7 +173,7 @@ const Encuestas = () => {
                                                             handleChange(encuesta._id, pregunta._id, e.target.value, pregunta.tipo)
                                                         }
                                                         
-                                                        className="mr-3 accent-blue-600"
+                                                        className={pregunta.tipo==='Cerrada' ? "mr-3 accent-blue-600" : "hidden peer"}
                                                         disabled={encuesta.cerrada}
                                                         // Solo requerimos input nativo si es radio button (Cerrada)
                                                         required={pregunta.tipo === 'Cerrada'}
