@@ -23,6 +23,7 @@
     "mongoose": "^8.16.0",
     "multer": "^2.0.2",
     "nodemailer": "^7.0.4",
+    "prom-client": "^15.1.3",
     "shared": "file:../shared"
   },
   "devDependencies": {
