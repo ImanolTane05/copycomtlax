@@ -2,7 +2,8 @@ import React, { useEffect,useState } from 'react';
 import axios from 'axios';
 import ArticleCard from '../components/ArticleCard';
 import ContactCard from '../components/contactCard';
-
+import { FaSpinner } from "react-icons/fa";
+import ErrorMessage from '../components/ErrorMessage';
 
 const LocalFooter = ({ children }) => {
   return(
@@ -15,13 +16,23 @@ const LocalFooter = ({ children }) => {
 }
 const Visitor = () => {
   const [noticias,setNoticias]=useState();
+  const [error,setError]=useState(null);
+  const [isLoading,setIsLoading]=useState(true);
 
   useEffect(()=>{
-    axios.get('http://localhost:5000/api/noticias/')
+    axios.get(`${import.meta.env.VITE_BASE_URL}/noticias/`)
       .then(res=>setNoticias(res.data))
-      .catch(err=>console.log("Error al cargar noticias:",err));
+      .catch(err=>setError(err))
+      .finally(setIsLoading(false));
   },[]);
   
+  if (isLoading) {
+    return <FaSpinner className="loading-icon" size={"15%"} color='#777'/>
+  }
+
+  if (error) {
+    return <ErrorMessage error={error} message={"Error al recuperar noticias."}/>
+  }
 
   return (
     <div className='flex flex-col min-h-screen'>
@@ -44,7 +55,7 @@ const Visitor = () => {
                 }
               </div>
             : 
-              <div className='grid grid-cols-[(3,1fr)] gap-[10px] my-10'>
+              <div className='grid grid-cols-[(3,1fr)] gap-2.5 my-10'>
                 <div>
                   <img src="no_content.png" width={256} className='opacity-50 inline-block'/>
                 </div>

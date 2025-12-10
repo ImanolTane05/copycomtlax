@@ -18,7 +18,7 @@ const Register = () => {
     try {
       console.log('Registration form submitted', data);
 
-      const response = await axios.post('http://localhost:3001/api/auth/register', data);
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/auth/register`, data);
 
       if (response.status === 201) {
         alert('Registro exitoso');

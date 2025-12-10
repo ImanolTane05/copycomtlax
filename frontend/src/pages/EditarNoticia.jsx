@@ -7,6 +7,7 @@ import useModal from "../components/RichTextEditor/hooks/useModal";
 import axios from "axios";
 
 import "../App.css";
+import { FaSpinner } from "react-icons/fa";
 
 const EditarNoticia=()=> {
     const {id}=useParams();
@@ -37,7 +38,7 @@ const EditarNoticia=()=> {
     useEffect(()=>{
         const fetchOldContent=async()=>{
             try {
-                const res=await axios.get(`http://localhost:5000/api/noticias/${id}`);
+                const res=await axios.get(`${import.meta.env.VITE_BASE_URL}/noticias/${id}`);
                 setOldContent(res.data);
                 setTitle(res.data.title);
                 if (res.data.lead) {setLead(res.data.lead)};
@@ -45,8 +46,7 @@ const EditarNoticia=()=> {
                 setEditorContent(res.data.body);
                 setOldBody(res.data.body);
             } catch (err) {
-                setError("Error al recuperar el artículo.");
-                console.error(err);
+                setError(error);
             } finally {
                 setIsLoading(false);
             }
@@ -87,7 +87,7 @@ const EditarNoticia=()=> {
             } else {
                 body=JSON.stringify(editorContent);
             }
-            const response=await axios.put(`http://localhost:5000/api/noticias/${id}`,{
+            const response=await axios.put(`${import.meta.env.VITE_BASE_URL}/noticias/${id}`,{
                     title:data.title,
                     lead:data.lead,
                     headerPic:removeHeader||headerPic=='' ? '' : headerPic,
@@ -112,28 +112,26 @@ const EditarNoticia=()=> {
     }
 
     if (isLoading) {
-        return <>
-            Cargando...
-        </>
+        return <FaSpinner className="loading-icon"/>
     }
 
     if (error) {
-        return <>Error al abrir el editor.</>
+        return <ErrorMessage error={error} message={"Ocurrió un error al recuperar los datos de la noticia."}/>
     }
 
     return (
-        <div className="grid-cols-subgrid m-5">
-            <h1 className="text-3xl sm:text-4xl font-extrabold mb-6 text-center text-gray-900">
-                Editando noticia...
+        <div className="grid-cols-subgrid m-5 bg-gray-100 rounded-xl shadow-2xl relative">
+            <h1 className="text-3xl sm:text-4xl font-extrabold mb-6 text-center text-gray-900 pt-6">
+                Actualizar noticia
             </h1>
-            <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
-                <label htmlFor="title">Título</label>
+            <form className="space-y-5 mx-5" onSubmit={handleSubmit(onSubmit)}>
+                <label htmlFor="title" className="text-2xl font-semibold">Título</label>
                 <div className="pb-2">
                     <input 
                         id="title"
                         onChange={(e)=>{setTitle(e.target.value)}}
                         type="text" 
-                        className="w-[100%] border-[1px] p-1 border-black rounded-lg"
+                        className="w-full border p-3 bg-white border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
                         defaultValue={title}
                         {...register('title',{
                             required:"El título es obligatorio"
@@ -141,20 +139,20 @@ const EditarNoticia=()=> {
                     />
                     {errors.name && <div className={styles.error}>{errors.name.message}</div>}
                 </div>
-                <label htmlFor="lead">Introducción</label>
+                <label htmlFor="lead" className="text-2xl font-semibold">Introducción</label>
                 <div className="pb-2">
                     <textarea 
                         id="lead"
                         onChange={(e)=>setLead(e.target.value)}
-                        className="w-[100%] border-[1px] border-black p-1 rounded-lg"
+                        className="w-full border p-3 bg-white border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
                         defaultValue={lead}
                         {...register('lead')}
                     />
                 </div>
-                <p>Encabezado</p>
+                <p className="text-2xl font-semibold">Encabezado</p>
                 <label 
                     htmlFor="headingImg" 
-                    className="bg-amber-800 hover:bg-amber-700 active:bg-amber-900 w-fit px-2 justify-center text-white p-[5px] mx-auto rounded-md"
+                    className="bg-amber-800 hover:bg-amber-700 active:bg-amber-900 w-fit px-2 justify-center text-white p-[5px] mx-auto rounded-md transition"
                 >
                     Insertar imagen...
                 </label>
@@ -163,7 +161,7 @@ const EditarNoticia=()=> {
                         id="headingImg"
                         type="file" 
                         accept="image/*"
-                        className="[display:none]"
+                        className="hidden"
                         {...register('headerPic',{
                             onChange:(e)=>{if (e.target.files[0]) {handleSetHeading(e.target.files)}}
                         })}
@@ -207,7 +205,7 @@ const EditarNoticia=()=> {
                         {modal}
                     </p>
                 }
-                <label htmlFor="body">Contenido</label>
+                <label htmlFor="body" className="text-2xl font-semibold">Contenido</label>
                 <div className="editorWrapper">
                     <RichTextEditor
                         onEditorStateChange={handleEditorStateChange}
@@ -223,7 +221,7 @@ const EditarNoticia=()=> {
                 />
                 <button
                     type="submit"
-                    className="bg-blue-900 hover:bg-blue-800 transition-transform text-white p-2 rounded-lg"
+                    className="bg-blue-900 hover:bg-blue-800 active:bg-blue-950 transition-transform text-white p-2 inline-block lg:w-[60%] md:w-[80%] sm:w-full rounded-lg mb-5 text-2xl font-semibold"
                 >
                         Actualizar
                 </button>

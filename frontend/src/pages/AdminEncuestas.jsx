@@ -39,7 +39,7 @@ const AdminEncuestas = () => {
 
     const fetchEncuestas = async () => {
         const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:5000/api/encuestas/admin', {
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/encuestas/admin`, {
             headers: { Authorization: `Bearer ${token}` },
         });
         return res.data;
@@ -53,7 +53,7 @@ const AdminEncuestas = () => {
     const estadoMutation = useMutation({
         mutationFn: ({ id, estado }) =>
             axios.patch(
-                `http://localhost:5000/api/encuestas/${id}/estado`,
+                `${import.meta.env.VITE_BASE_URL}/encuestas/${id}/estado`,
                 { cerrada: estado },
                 { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
             ),
@@ -69,7 +69,7 @@ const AdminEncuestas = () => {
 
     const eliminarMutation = useMutation({
         mutationFn: (id) =>
-            axios.delete(`http://localhost:5000/api/encuestas/${id}`, {
+            axios.delete(`${import.meta.env.VITE_BASE_URL}/encuestas/${id}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
             }),
         onSuccess: () => {
@@ -110,7 +110,7 @@ const AdminEncuestas = () => {
         setLoadingGemini(prev => ({ ...prev, [preguntaId]: true }));
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get(`http://localhost:5000/api/encuestas/${encuestaId}/pregunta/${preguntaId}/resumen`, {
+            const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/encuestas/${encuestaId}/pregunta/${preguntaId}/resumen`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setResumenGemini(prev => ({ ...prev, [preguntaId]: res.data }));
@@ -186,7 +186,7 @@ const AdminEncuestas = () => {
                 <p className="text-xl font-semibold mt-2">Votos totales: {encuesta.totalVotos}</p>
 
                 {isExpanded && (
-                    <div className="flex-grow space-y-6 overflow-y-auto max-h-[80vh] pr-4 mt-4">
+                    <div className="grow space-y-6 overflow-y-auto max-h-[80vh] pr-4 mt-4">
                         {encuesta.preguntas.length > 0 ? (
                             encuesta.preguntas.map((pregunta, index) => {
                                 let dataGrafica = null;
@@ -254,7 +254,7 @@ const AdminEncuestas = () => {
                                                             <div key={opcion} className="flex items-center mb-1">
                                                                 <span className="inline-block w-3 h-3 rounded-full mr-2 shrink-0"
                                                                     style={{ backgroundColor: coloresGrafica[i % coloresGrafica.length] }}></span>
-                                                                <span className="text-gray-700 break-words">{opcion}: {porcentaje}%</span>
+                                                                <span className="text-gray-700 wrap-break-word">{opcion}: {porcentaje}%</span>
                                                             </div>
                                                         ))}
                                                     </div>

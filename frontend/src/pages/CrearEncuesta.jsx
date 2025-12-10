@@ -124,7 +124,7 @@ const CrearEncuesta = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch('http://localhost:5000/api/encuestas', {
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/encuestas`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -183,20 +183,20 @@ const CrearEncuesta = () => {
                                 key={i}
                                 className="p-5 border border-gray-300 rounded-xl bg-white shadow-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-all duration-300 ease-in-out"
                             >
-                                <div className="flex-grow">
+                                <div className="grow">
                                     <strong className="block mb-1 text-lg font-bold text-blue-600">
                                         {preg.tipo}:
                                     </strong>
-                                    <p className="text-gray-800 text-base mb-2 break-words">{preg.texto}</p>
+                                    <p className="text-gray-800 text-base mb-2 wrap-break-word">{preg.texto}</p>
                                     {preg.opciones?.length > 0 && (
                                         <ul className="list-disc list-inside text-gray-600 ml-4 space-y-1">
                                             {preg.opciones.map((op, j) => (
-                                                <li key={j} className="break-words">{op}</li>
+                                                <li key={j} className="wrap-break-word">{op}</li>
                                             ))}
                                         </ul>
                                     )}
                                 </div>
-                                <div className="flex-shrink-0 flex gap-2">
+                                <div className="shrink-0 flex gap-2">
                                     <button
                                         onClick={() => handleEditarPregunta(i)}
                                         className="p-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition duration-300 ease-in-out shadow-md"
@@ -233,7 +233,7 @@ const CrearEncuesta = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4">
                     <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-2xl max-w-lg w-full text-gray-900 card-animation">
                         <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-2xl sm:text-3xl font-semibold text-center flex-grow">
+                            <h3 className="text-2xl sm:text-3xl font-semibold text-center grow">
                                 {editandoIndex !== null ? 'Editar Pregunta' : 'Nueva Pregunta'}
                             </h3>
                             <button

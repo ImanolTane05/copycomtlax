@@ -16,6 +16,7 @@ import Noticia from './pages/Noticia';
 import EditarNoticia from './pages/EditarNoticia';
 import AdminNoticias from './pages/AdminNoticias';
 import Contact from './pages/Contact';
+import ViewBody from './pages/ViewBody';
 
 // Componente para proteger rutas admin
 const ProtectedRoute = ({ children }) => {
@@ -29,7 +30,7 @@ const AppWrapper = () => {
   const [message,setMessage]=useState("Cargando...");
 
   useEffect(()=>{
-    axios.get("http://localhost:5000"
+    axios.get(import.meta.env.VITE_BACKEND_URL
     ).then((res)=>{
       setMessage(res.data);
       console.log("Data:",res.data);
@@ -37,14 +38,18 @@ const AppWrapper = () => {
     })
   },[]);
 
-  const location = useLocation();
+  const {pathname} = useLocation();
 
   // No mostrar navbar en login admin
   const noNavbarRoutes = ['/login'];
+  let hideNavbar=noNavbarRoutes.includes(pathname);
+  if (pathname.includes('/noticiabody/')) {
+    hideNavbar=true;
+  }
 
   return (
     <>
-      {!noNavbarRoutes.includes(location.pathname) && <Navbar />}
+      {!hideNavbar && <Navbar />}
 
       <Routes>
         <Route path="/" element={<Visitor />} />
@@ -83,6 +88,7 @@ const AppWrapper = () => {
             <AdminNoticias/>
           </ProtectedRoute>
         } />
+        <Route path="/noticiabody/:id" element={<ViewBody/>}/>
         <Route path='admin/noticias/editar/:id' element={<EditarNoticia/>}/>
 
         

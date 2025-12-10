@@ -12,9 +12,8 @@ import {
   FaLock,
   FaUnlock,
   FaSpinner,
-  FaChevronDown,
-  FaChevronUp,
 } from 'react-icons/fa';
+import ErrorMessage from '../components/ErrorMessage';
 
 /**
  * Componente principal para editar una encuesta existente.
@@ -48,7 +47,7 @@ const EditarEncuesta = () => {
     queryKey: ['encuesta', id],
     queryFn: async () => {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`http://localhost:5000/api/encuestas/${id}`, {
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/encuestas/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return res.data;
@@ -70,7 +69,7 @@ const EditarEncuesta = () => {
     mutationFn: async (encuestaActualizada) => {
       const token = localStorage.getItem('token');
       return axios.put(
-        `http://localhost:5000/api/encuestas/${id}`,
+        `h${import.meta.env.VITE_BASE_URL}/encuestas/${id}`,
         encuestaActualizada,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -93,7 +92,7 @@ const EditarEncuesta = () => {
     mutationFn: async () => {
       const token = localStorage.getItem('token');
       return axios.patch(
-        `http://localhost:5000/api/encuestas/${id}/cerrar`,
+        `${import.meta.env.VITE_BASE_URL}/encuestas/${id}/cerrar`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -116,7 +115,7 @@ const EditarEncuesta = () => {
     mutationFn: async () => {
       const token = localStorage.getItem('token');
       return axios.patch(
-        `http://localhost:5000/api/encuestas/${id}/abrir`,
+        `${import.meta.env.VITE_BASE_URL}/encuestas/${id}/abrir`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -285,19 +284,9 @@ const EditarEncuesta = () => {
 
 
   if (isLoading)
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-white text-gray-800">
-        <p className="text-xl animate-pulse">Cargando encuesta...</p>
-      </div>
-    );
+    return <FaSpinner className="loading-icon"/>
   if (isError)
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-white text-gray-800">
-        <p className="text-red-600 text-xl text-center">
-          Error al cargar la encuesta: {error.message}
-        </p>
-      </div>
-    );
+    return (<ErrorMessage error={error} message={"Error al recuperar los detalles de la encuesta."}/>);
 
   return (
     <div className="min-h-screen bg-white p-4 sm:p-6 text-gray-800 flex justify-center font-sans antialiased">
@@ -372,7 +361,7 @@ const EditarEncuesta = () => {
                     key={pregunta._id || index}
                     className="bg-white p-5 rounded-xl shadow-sm border border-gray-300 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
                   >
-                    <div className="flex-grow">
+                    <div className="grow">
                       <strong className="block mb-1 text-lg font-bold text-blue-600">
                         {pregunta.tipo}:
                       </strong>

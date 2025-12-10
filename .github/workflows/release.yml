@@ -1,0 +1,74 @@
+name: CI/CD Release
+
+on:
+  # 1. Disparador principal: se ejecuta cuando haces 'git push' a la rama 'main' o cuando se crean tags
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*.*.*' # Se dispara al crear cualquier etiqueta que empiece por 'v'
+
+jobs:
+  create_release:
+    # Solo ejecutar si el evento fue una PUSH a 'main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Permite que el workflow escriba (cree el release) en el repositorio
+      
+    steps:
+      - name: Checkout code 📦
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Necesario para obtener todas las etiquetas
+          
+      # --- LÓGICA DE DETECCIÓN DE CAMBIOS (PARA EVITAR CREAR RELEASES EN CADA PUSH) ---
+      
+      - name: Get the latest tag 🏷️
+        id: get_tag
+        run: |
+          # Get the latest tag and expose it as a step output
+      - name: Check for new commits since last tag 🔍
+        id: check_commits
+        run: |
+          # Revisa si hay commits entre la etiqueta anterior y el HEAD actual
+          if [[ $(git rev-list ${{ env.LAST_TAG }}..HEAD --count) -gt 0 ]]; then
+            echo "Hay nuevos commits. Se creará una etiqueta."
+            echo "SHOULD_TAG=true" >> $GITHUB_ENV
+          else
+            echo "No hay nuevos commits desde la última etiqueta. Se omite el release."
+            echo "SHOULD_TAG=false" >> $GITHUB_ENV
+          fi
+
+      - name: Create new Patch Tag 🔖
+        if: ${{ steps.check_commits.outputs.should_tag == 'true' }}
+        id: create_tag
+        run: |
+          # 1. Obtener la última versión (ej: v1.0.1)
+          LATEST_VERSION="${{ steps.get_tag.outputs.last_tag }}"
+          
+          # 2. Incrementar la versión PATCH (el último número)
+          NEW_VERSION=$(echo "$LATEST_VERSION" | awk -F. '{$NF++; print $1"."$2"."$NF}')
+          
+          # 3. Crear la nueva etiqueta y forzar el push
+          git tag -a "$NEW_VERSION" -m "Automated patch release: $NEW_VERSION"
+          git push origin "$NEW_VERSION"
+          echo "new_tag=$NEW_VERSION" >> $GITHUB_OUTPUT
+          git push origin "$NEW_VERSION"
+      - name: Create GitHub Release 🚀
+        if: ${{ steps.check_commits.outputs.should_tag == 'true' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          # Usa la etiqueta que acabamos de crear o la última si no se creó una nueva
+          tag_name: ${{ steps.create_tag.outputs.new_tag || steps.get_tag.outputs.last_tag }}
+          name: Release ${{ steps.create_tag.outputs.new_tag || steps.get_tag.outputs.last_tag }}
+          body: |
+            ## Novedades en esta versión
+            
+            Los cambios se pueden ver en el historial de commits.
+            
+            - Correcciones de errores menores.
+            - Mejoras de estabilidad.
+          draft: false
+          prerelease: false

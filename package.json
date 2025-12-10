@@ -5,7 +5,9 @@
   "scripts": {
     "start:backend": "npm run start --workspace=backend",
     "start:frontend": "npm run dev --workspace=frontend",
+    "build-and-serve:frontend": "npm run build-and-serve --workspace=frontend",
     "start:all": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:production": "concurrently \"npm run start:backend\" \"npm run build-and-serve:frontend\"",
     "test:backend": "npm run test --workspace=backend",
     "test:frontend": "npm run test --workspace=frontend",
     "test:all": "concurrently \"npm run test:backend\" \"npm run test:frontend\""
@@ -18,8 +20,5 @@
   "devDependencies": {
     "concurrently": "^9.2.1",
     "mocha": "^11.7.5"
-  },
-  "dependencies": {
-    "expo-server-sdk": "^4.0.0"
   }
 }

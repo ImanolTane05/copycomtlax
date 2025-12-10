@@ -1,20 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
-import { FaPaperPlane } from 'react-icons/fa';
+import { FaPaperPlane, FaSpinner } from 'react-icons/fa'; // Icono para el botón de envío
+import ErrorMessage from '../components/ErrorMessage';
 
 const Encuestas = () => {
     const [encuestas, setEncuestas] = useState([]);
     const [respuestas, setRespuestas] = useState({});
+    const [error,setError]=useState(null);
+    const [loading,setLoading]=useState(true);
 
     useEffect(() => {
         axios
-            .get('http://localhost:5000/api/encuestas')
+            .get(`${import.meta.env.VITE_BASE_URL}/encuestas`)
             .then((res) => setEncuestas(res.data))
             .catch((err) => {
-                console.error('Error al cargar encuestas:', err);
                 toast.error('Error al cargar las encuestas disponibles.');
-            });
+                setError(err);
+            })
+            .finally(setLoading(false));
     }, []);
 
     
@@ -88,7 +92,7 @@ const Encuestas = () => {
         }));
 
         try {
-            await axios.post(`http://localhost:5000/api/encuestas/${encuestaId}/responder`, {
+            await axios.post(`${import.meta.env.VITE_BASE_URL}/encuestas/${encuestaId}/responder`, {
                 respuestas: respuestasArray,
                 usuarioId: null,
             });
@@ -103,6 +107,13 @@ const Encuestas = () => {
             console.error(err);
         }
     };
+
+    if (loading) {
+        return <FaSpinner className="loading-icon"/>
+    }
+    if (error) {
+        return <ErrorMessage error={error} message={"Error al recuperar encuestas."}/>
+    }
 
     return (
         <div className="min-h-screen bg-white p-4 sm:p-8 text-gray-800 font-inter pt-24">
@@ -137,7 +148,12 @@ const Encuestas = () => {
                                             pregunta.opciones.map((opcion, idx) => (
                                                 <label
                                                     key={idx}
-                                                    className="block cursor-pointer mb-2 text-gray-700 hover:text-blue-600 transition"
+                                                    className={
+                                                        pregunta.tipo==='Cerrada' ?
+                                                            "block cursor-pointer mb-2 text-gray-700 hover:text-blue-600 transition"
+                                                        :
+                                                            "inline-flex mb-2 text-gray-700 hover:text-blue-600 items-center cursor-pointer transition"
+                                                    }
                                                 >
                                                     <input
                                                         type={pregunta.tipo === 'Cerrada' ? 'radio' : 'checkbox'}
@@ -162,6 +178,12 @@ const Encuestas = () => {
                                                         // Solo requerimos input nativo si es radio button (Cerrada)
                                                         required={pregunta.tipo === 'Cerrada'}
                                                     />
+                                                    {pregunta.tipo==='Opción múltiple' && 
+                                                    <div className='w-3 h-3 mr-3 border border-gray-300 rounded peer-checked:bg-blue-600 peer-checked:border-blue-600'>
+                                                        <svg className='hidden w-2 h-2 text-white peer-checked:block' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                                                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M5 13l4 4L19 7'></path>
+                                                        </svg>
+                                                    </div>}
                                                     {opcion}
                                                 </label>
                                             ))

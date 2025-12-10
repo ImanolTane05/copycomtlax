@@ -465,7 +465,7 @@ export default function ToolbarPlugin() {
     );
 
     return (
-    <div className="toolbar">
+    <div className="toolbar border border-gray-300">
       <button
         disabled={!canUndo || !isEditable}
         onClick={() => {

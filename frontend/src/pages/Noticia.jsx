@@ -2,10 +2,12 @@ import { useParams } from "react-router-dom";
 import ArticleCard from "../components/ArticleCard";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { FaSpinner } from "react-icons/fa";
 
 import ViewContent from "../components/ViewContent";
 
 import "../App.css";
+import ErrorMessage from "../components/ErrorMessage";
 
 const Noticia=()=> {
     const {id}=useParams();
@@ -20,11 +22,10 @@ const Noticia=()=> {
     useEffect(()=>{
         const fetchArticle=async()=>{
             try {
-                const res=await axios.get(`http://localhost:5000/api/noticias/${id}`)
+                const res=await axios.get(`${import.meta.env.VITE_BASE_URL}/noticias/${id}`)
                 setArticle(res.data);
             } catch (err) {
-                setError("Error al recuperar el artículo.");
-                console.error(err);
+                setError(err);
             } finally {
                 setIsLoading(false);
             }
@@ -33,29 +34,42 @@ const Noticia=()=> {
     },[id]);
 
     useEffect(()=>{
-        axios.get('http://localhost:5000/api/noticias/')
+        axios.get(`${import.meta.env.VITE_BASE_URL}/noticias/`)
           .then(res=>setNoticias(res.data))
           .catch(err=>console.log("Error al cargar noticias:",err));
     },[]);
 
     if (isLoading) {
-        return <>Cargando...</>
+        return <FaSpinner className="loading-icon"/>
     }
-
     if (error) {
-        return <>{error.message}</>
+        return <ErrorMessage error={error} message={"Error al recuperar la noticia."}/>
     }
     if (!article) {
-        return <div>404 - No se encontró el artículo</div>
+        return <div className="absolute top-[50%] left-[50%] transform-[translate(-50%,-50%)]">No se encontró la noticia.</div>
+    }
+
+    function getFormattedDate (date) {
+        return new Date(date).toLocaleDateString('es-ES',{
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+            hour:'2-digit',
+            minute:'2-digit',
+            hour12:'true'
+        });
     }
 
     return (
         <div className="flex flex-col m-5">
             <article>
                 <header className="flex flex-col">
-                    <h1 className="text-center font-bold text-3xl">{article.title}</h1>
+                    <p className="text-center font-bold text-4xl pb-5 mb-10">{article.title}</p>
+                    <p className="font-[14px] text-[#999] mb-5 border-b border-b-[#eee] pb-10">
+                        Publicado el {article.publishedDate && getFormattedDate(article.publishedDate)} {article.publishedDate!==article.editedDate && `(Editado ${getFormattedDate(article.editedDate)})`}
+                    </p>
                     <br/>
-                    <p className="whitespace-pre-wrap text-justify my-5">{article.lead}</p>
+                    <p className="font-semibold text-[#333] border-l-4 border-l-[#00A859] whitespace-pre-wrap text-justify pl-10 my-5">{article.lead}</p>
                     {
                         article.headerPic &&
                             <img 
