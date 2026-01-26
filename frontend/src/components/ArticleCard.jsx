@@ -5,7 +5,9 @@ export default function ArticleCard({
     id,
     title,
     lead,
-    image
+    image,
+    clickable,
+    children
 }) {
     const navigate=useNavigate();
 
@@ -14,8 +16,8 @@ export default function ArticleCard({
     }
 
     return(
-        <div key={id} id={id} className="hover:scale-105 transition-transform shadow-2xl rounded-lg bg-gray-100 cursor-pointer min-w-52"
-        onClick={handleClick}
+        <div key={id} id={id} className={`flex flex-col shadow-2xl rounded-lg bg-gray-100 min-w-52 ${clickable && 'hover:scale-105 transition-transform cursor-pointer'}`}
+            onClick={()=>{if (clickable) handleClick()}}
         >
             {image ?
                 <div className="overflow-hidden max-w-[95%] m-auto pt-2">
@@ -34,6 +36,11 @@ export default function ArticleCard({
                     {lead}
                 </p>
             </div>
+            {children && 
+            <div className="flex flex-row border-t-2 border-gray-200 mt-auto">
+                {children}
+            </div> 
+            }
         </div>
     )
 }

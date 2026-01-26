@@ -61,6 +61,7 @@ const EditarEncuesta = () => {
     if (encuesta) {
       setTitulo(encuesta.titulo);
       setPreguntas(encuesta.preguntas || []);
+      console.log(encuesta)
     }
   }, [encuesta]);
 
@@ -69,7 +70,7 @@ const EditarEncuesta = () => {
     mutationFn: async (encuestaActualizada) => {
       const token = localStorage.getItem('token');
       return axios.put(
-        `h${import.meta.env.VITE_BASE_URL}/encuestas/${id}`,
+        `${import.meta.env.VITE_BASE_URL}/encuestas/${id}`,
         encuestaActualizada,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -92,8 +93,8 @@ const EditarEncuesta = () => {
     mutationFn: async () => {
       const token = localStorage.getItem('token');
       return axios.patch(
-        `${import.meta.env.VITE_BASE_URL}/encuestas/${id}/cerrar`,
-        {},
+        `${import.meta.env.VITE_BASE_URL}/encuestas/${id}/estado`,
+        {cerrada:!encuesta?.cerrada},
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -101,7 +102,7 @@ const EditarEncuesta = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['encuestas'] });
-      toast.success('Encuesta cerrada exitosamente.');
+      toast.success(`Encuesta ${encuesta?.cerrada ? 'abierta' : 'cerrada'} exitosamente.`);
       navigate('/admin/encuestas');
     },
     onError: (err) => {
@@ -259,16 +260,16 @@ const EditarEncuesta = () => {
     } else {
       toast((t) => (
         <div className="flex flex-col p-4 bg-white text-gray-800 rounded-xl shadow-lg">
-          <span>¿Estás seguro de que quieres cerrar esta encuesta? No se podrán recibir más respuestas.</span>
+          <span>¿Estás seguro de que quieres {encuesta?.cerrada ? 'abrir' : 'cerrar'} esta encuesta? No se podrán recibir más respuestas.</span>
           <div className="flex gap-4 mt-4 justify-end">
             <button
-              className="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition flex items-center gap-2"
+              className={`${encuesta?.cerrada ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'} text-white px-4 py-2 rounded-lg font-semibold  transition flex items-center gap-2`}
               onClick={() => {
                 closeMutation.mutate();
                 toast.dismiss(t.id);
               }}
             >
-              <FaLock /> Sí, cerrar
+              <FaLock /> Sí, {encuesta?.cerrada ? 'abrir' : 'cerrar'}
             </button>
             <button
               className="bg-gray-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-600 transition flex items-center gap-2"
@@ -300,12 +301,12 @@ const EditarEncuesta = () => {
           <button
             onClick={handleCerrarAbrirEncuesta}
             className={`px-6 py-3 rounded-xl font-semibold transition flex items-center justify-center gap-2 ${
-              encuesta?.estaCerrada
+              encuesta?.cerrada
                 ? 'bg-green-600 hover:bg-green-700 text-white'
                 : 'bg-red-600 hover:bg-red-700 text-white'
             }`}
           >
-            {encuesta?.estaCerrada ? (
+            {encuesta?.cerrada ? (
               <>
                 <FaUnlock className="h-5 w-5" />
                 Abrir Encuesta

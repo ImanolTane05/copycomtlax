@@ -6,6 +6,8 @@ import { Link } from "react-router-dom";
 import ErrorMessage from "../components/ErrorMessage";
 import { FaSpinner } from "react-icons/fa";
 
+import ArticleCard from "../components/ArticleCard";
+
 const AdminNoticias=()=>{
     const navigate=useNavigate();
 
@@ -46,74 +48,59 @@ const AdminNoticias=()=>{
                 {
                     noticias ?
                         noticias.map((noticia)=> (
-                            <div 
-                                key={noticia._id} id={noticia._id} 
-                                className="transition-transform shadow-2xl rounded-lg bg-gray-100 min-w-52 relative"
+                            <ArticleCard 
+                                key={noticia._id}
+                                id={noticia._id}
+                                title={noticia.title}
+                                lead={noticia.lead}
+                                image={noticia.headerPic}
+                                clickable={false}
                             >
-                                { noticia.headerPic ?
-                                <div className="overflow-hidden max-w-[95%] m-auto pt-2">
-                                    <img 
-                                    src={noticia.headerPic}
-                                    alt={`image-${noticia._id}`}
-                                    className="m-auto"/>
-                                </div>
-                                : ""
-                                }
-                                <div className="p-5">
-                                    <h2 className="text-2xl truncate font-black">
-                                        {noticia.title ?? "Título de artículo"}
-                                    </h2>
-                                    <p className="whitespace-pre-line overflow-hidden text-ellipsis [display:-webkit-box] [-webkit-line-clamp:3] [-webkit-box-orient:vertical] text-justify h-auto min-w-[100px] w-11/12 mb-8">
-                                        {noticia.lead}
-                                    </p>
-                                </div>
-                                <div className="flex flex-row absolute bottom-0">
-                                    <button
-                                        className="bg-blue-900 hover:bg-blue-800 active:bg-blue-950 m-2 py-1 px-3 rounded-md transition-transform text-white cursor-pointer"
-                                        onClick={()=>navigate(`editar/${noticia._id}`)}
-                                    >
-                                        Editar
-                                    </button>
-                                    <button
-                                        className="bg-red-600 hover:bg-red-700 active:bg-red-900 m-2 py-1 px-3 rounded-md transition-transform text-white cursor-pointer"
-                                        onClick={()=>{
-                                            showModal("Eliminando noticia",(onClose)=>(
-                                                <>
-                                                    ¿Eliminar Noticia? (Título: {noticia.title})
-                                                    <div className="flex flex-row">
-                                                        <button
-                                                            className="bg-red-600 hover:bg-red-700 active:bg-red-900 m-2 py-1 px-3 rounded-md transition-transform text-white cursor-pointer"
-                                                            onClick={()=>{
-                                                                const token=localStorage.getItem('token');
-                                                                const config = token
-                                                                    ? { headers: { Authorization: `Bearer ${token}` } }
-                                                                    : {};
-                                                                axios.delete(`${import.meta.env.VITE_BASE_URL}/noticias/${noticia._id}`,config)
-                                                                    .then(res=>{
-                                                                        console.log(res);
-                                                                        fetchNoticias();
-                                                                    })
-                                                                    .catch(err=>console.error("Error al eliminar:",err));
-                                                                onClose();
-                                                            }}
-                                                        >
-                                                            Eliminar
-                                                        </button>
-                                                        <button
-                                                            className="bg-blue-900 hover:bg-blue-800 active:bg-blue-950 m-2 py-1 px-3 rounded-md transition-transform text-white cursor-pointer"
-                                                            onClick={onClose}
-                                                        >
-                                                            Cancelar
-                                                        </button>
-                                                    </div>
-                                                </>
-                                            ));
-                                        }}
-                                    >
-                                        Eliminar
-                                    </button>
-                                </div>
-                            </div>
+                                <button
+                                    className="bg-blue-900 hover:bg-blue-800 active:bg-blue-950 m-2 py-1 px-3 rounded-md transition-transform text-white cursor-pointer"
+                                    onClick={()=>navigate(`editar/${noticia._id}`)}
+                                >
+                                    Editar
+                                </button>
+                                <button
+                                    className="bg-red-600 hover:bg-red-700 active:bg-red-900 m-2 py-1 px-3 rounded-md transition-transform text-white cursor-pointer"
+                                    onClick={()=>{
+                                        showModal("Eliminando noticia",(onClose)=>(
+                                            <>
+                                                ¿Eliminar Noticia? (Título: {noticia.title})
+                                                <div className="flex flex-row">
+                                                    <button
+                                                        className="bg-red-600 hover:bg-red-700 active:bg-red-900 m-2 py-1 px-3 rounded-md transition-transform text-white cursor-pointer"
+                                                        onClick={()=>{
+                                                            const token=localStorage.getItem('token');
+                                                            const config = token
+                                                                ? { headers: { Authorization: `Bearer ${token}` } }
+                                                                : {};
+                                                            axios.delete(`${import.meta.env.VITE_BASE_URL}/noticias/${noticia._id}`,config)
+                                                                .then(res=>{
+                                                                    console.log(res);
+                                                                    fetchNoticias();
+                                                                })
+                                                                .catch(err=>console.error("Error al eliminar:",err));
+                                                            onClose();
+                                                        }}
+                                                    >
+                                                        Eliminar
+                                                    </button>
+                                                    <button
+                                                        className="bg-blue-900 hover:bg-blue-800 active:bg-blue-950 m-2 py-1 px-3 rounded-md transition-transform text-white cursor-pointer"
+                                                        onClick={onClose}
+                                                    >
+                                                        Cancelar
+                                                    </button>
+                                                </div>
+                                            </>
+                                        ));
+                                    }}
+                                >
+                                    Eliminar
+                                </button>
+                            </ArticleCard>
                         ))
                     :
                         <>No hay noticias</>

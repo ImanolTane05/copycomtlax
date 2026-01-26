@@ -50,6 +50,7 @@ const Visitor = () => {
                         title={noticia.title}
                         lead={noticia.lead}
                         image={noticia.headerPic}
+                        clickable={true}
                     />
                   ))
                 }
